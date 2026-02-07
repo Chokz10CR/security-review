@@ -1,226 +1,118 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Security Review</title>
-  <meta name="color-scheme" content="light dark" />
-  <style>
-    :root{
-      --bg:#f6f8fb; --card:#fff; --text:#0f172a; --muted:#475569; --muted2:#64748b;
-      --border:#e2e8f0; --shadow:0 18px 50px rgba(2,6,23,.10);
-      --blue:#2563eb; --blue2:#1d4ed8; --green:#16a34a; --amber:#d97706; --red:#dc2626;
-      --chip:#eef2ff; --chipText:#1e40af; --radius:14px;
-      --mono:ui-monospace,Menlo,Consolas,monospace; --sans:system-ui,"Segoe UI",Arial,sans-serif;
-    }
-    @media (prefers-color-scheme: dark){
-      :root{--bg:#0b1220;--card:#0f172a;--text:#e5e7eb;--muted:#cbd5e1;--muted2:#94a3b8;--border:#243244;--shadow:0 22px 60px rgba(0,0,0,.35);--chip:#111b34;--chipText:#93c5fd;}
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:28px;
-      background:
-        radial-gradient(1100px 700px at 10% 10%, rgba(37,99,235,.10), transparent 55%),
-        radial-gradient(900px 600px at 90% 10%, rgba(22,163,74,.10), transparent 60%),
-        var(--bg);
-      font-family:var(--sans); color:var(--text);
-    }
-    .shell{width:min(900px,100%); display:grid; grid-template-columns:1.2fr .8fr; gap:18px}
-    @media(max-width:900px){.shell{grid-template-columns:1fr}}
-    .panel{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden}
-    .header{padding:18px 22px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; gap:12px}
-    .brand{display:flex; gap:12px; align-items:center}
-    .logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--blue),var(--blue2)); box-shadow:0 12px 26px rgba(37,99,235,.25)}
-    .brand h1{margin:0;font-size:14px;font-weight:800}
-    .brand .sub{font-size:12px;color:var(--muted2)}
-    .chip{background:var(--chip); color:var(--chipText); border:1px solid rgba(37,99,235,.18); padding:6px 10px; border-radius:999px; font-size:12px; font-weight:800}
-    .content{padding:22px}
-    .title{margin:0 0 8px 0; font-size:22px}
-    .lead{margin:0 0 16px 0; color:var(--muted); line-height:1.6; font-size:14.5px}
-    .row{display:flex; gap:12px; align-items:center; flex-wrap:wrap}
-    .btn{border:1px solid rgba(37,99,235,.25); background:linear-gradient(180deg,rgba(37,99,235,.95),rgba(29,78,216,.95)); color:#fff; padding:12px 14px; border-radius:12px; font-weight:800; cursor:pointer}
-    .btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
-    .meta{font-family:var(--mono); font-size:12px; color:var(--muted2); display:flex; gap:10px; align-items:center}
-    .dot{width:6px;height:6px;border-radius:99px;background:var(--green); box-shadow:0 0 0 3px rgba(22,163,74,.16)}
-    .divider{height:1px;background:var(--border);margin:16px 0}
-    .progressWrap{height:10px;border-radius:999px;overflow:hidden;border:1px solid rgba(148,163,184,.18); background:rgba(148,163,184,.18); display:none}
-    .progressBar{height:100%;width:0%; background:linear-gradient(90deg,rgba(37,99,235,.95),rgba(22,163,74,.95))}
-    .checklist{display:none; gap:10px; margin-top:14px}
-    .item{display:flex; gap:10px; padding:10px 12px; border:1px solid var(--border); border-radius:12px; background:rgba(148,163,184,.08)}
-    .icon{width:18px;height:18px;border-radius:6px;border:1px solid rgba(148,163,184,.35); display:grid; place-items:center; font-size:12px}
-    .ok .icon{border-color:rgba(22,163,74,.35); color:var(--green)}
-    .warn .icon{border-color:rgba(217,119,6,.35); color:var(--amber)}
-    .item .t{margin:0;font-weight:800;font-size:13px}
-    .item .d{margin:3px 0 0 0;color:var(--muted);font-size:13px}
-    .badgeEdu{display:none; align-items:center; gap:8px; padding:8px 10px; border-radius:12px; background:rgba(22,163,74,.10); border:1px solid rgba(22,163,74,.18); font-size:12px; font-weight:800}
-    .miniDot{width:8px;height:8px;border-radius:99px;background:var(--green); box-shadow:0 0 0 3px rgba(22,163,74,.14)}
-    .footer{padding:14px 22px;border-top:1px solid var(--border); color:var(--muted2); font-size:12px; display:flex; justify-content:space-between; flex-wrap:wrap}
-    .side{padding:18px}
-    .sideCard{border:1px solid var(--border); border-radius:14px; padding:14px; background:rgba(148,163,184,.06); margin-bottom:12px}
-    .kv{display:grid; grid-template-columns:120px 1fr; gap:8px 10px; font-size:13px}
-    .k{color:var(--muted2)} .v{word-break:break-word}
-    details{border:1px solid var(--border); border-radius:14px; padding:12px 14px; background:rgba(148,163,184,.06)}
-    summary{font-weight:800; font-size:13px; cursor:pointer}
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Behavioral Security Exposure</title>
+<style>
+  :root{--bg:#0b1220;--card:#0f172a;--text:#e5e7eb;--muted:#94a3b8;--border:#243244;
+        --blue:#2563eb;--green:#16a34a;--amber:#d97706;--red:#dc2626;}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+       background:radial-gradient(900px 600px at 10% 10%, rgba(37,99,235,.15), transparent 60%),var(--bg);
+       font-family:system-ui,Segoe UI,Arial,sans-serif;color:var(--text);padding:22px}
+  .card{width:min(860px,96vw);background:var(--card);border:1px solid var(--border);
+        border-radius:18px;box-shadow:0 30px 90px rgba(0,0,0,.45);overflow:hidden}
+  .h{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
+  .h b{letter-spacing:.3px}
+  .c{padding:22px}
+  .lead{color:var(--muted);line-height:1.6}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .btn{border:0;border-radius:12px;padding:12px 14px;cursor:pointer;font-weight:900}
+  .go{background:linear-gradient(180deg,#2563eb,#1d4ed8);color:#fff}
+  .ghost{background:transparent;color:#fff;border:1px solid var(--border)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .box{border:1px solid var(--border);border-radius:14px;padding:12px;background:rgba(148,163,184,.06)}
+  .k{color:var(--muted);font-size:12px}
+  .v{margin-top:6px;font-size:14px;word-break:break-word}
+  .bar{height:12px;border-radius:999px;overflow:hidden;background:rgba(148,163,184,.18);margin:14px 0}
+  .fill{height:100%;width:0%;background:linear-gradient(90deg,var(--green),var(--amber),var(--red));transition:width .25s}
+  .pill{display:inline-block;padding:6px 10px;border-radius:999px;font-weight:900;font-size:12px}
+  .low{background:rgba(22,163,74,.2);color:#a7f3d0}
+  .med{background:rgba(217,119,6,.25);color:#fde68a}
+  .high{background:rgba(220,38,38,.25);color:#fecaca}
+  .footer{padding:14px 22px;border-top:1px solid var(--border);color:var(--muted);font-size:12px}
+</style>
 </head>
 <body>
 
-<div class="shell">
-  <!-- MAIN -->
-  <div class="panel">
-    <div class="header">
-      <div class="brand">
-        <div class="logo"></div>
-        <div>
-          <h1>Secure Services</h1>
-          <div class="sub">Session Integrity & Risk Review</div>
-        </div>
-      </div>
-      <div class="chip">SECURITY REVIEW</div>
-    </div>
-
-    <div class="content" id="main">
-      <h2 class="title">Revisión de seguridad</h2>
-      <p class="lead">
-        Validando la integridad de su sesión. Este proceso no solicita credenciales
-        y toma solo unos segundos.
-      </p>
-
-      <div class="row">
-        <button class="btn" id="start">Continuar</button>
-        <div class="meta">
-          <span class="dot"></span>
-          <span>Servicio operativo</span>
-          <span>•</span>
-          <span id="ref">REF: --</span>
-        </div>
-      </div>
-
-      <div class="progressWrap" id="pwrap"><div class="progressBar" id="pbar"></div></div>
-      <div class="checklist" id="checks"></div>
-
-      <div class="divider"></div>
-
-      <div class="badgeEdu" id="edu">
-        <span class="miniDot"></span>
-        Simulación educativa, sin recolección de datos personales
-      </div>
-
-      <div class="row" id="actions" style="display:none; margin-top:12px">
-        <button class="btn btn-ghost" onclick="openExitModal()">Salir</button>
-      </div>
-    </div>
-
-    <div class="footer">
-      <span>© Secure Services</span>
-      <span>Política de seguridad • Estado del servicio</span>
-    </div>
+<div class="card">
+  <div class="h">
+    <b>Behavioral Security Exposure</b>
+    <span class="pill low" id="status">RIESGO BAJO</span>
   </div>
-
-  <!-- SIDE -->
-  <div class="panel">
-    <div class="header">
-      <div class="brand">
-        <div>
-          <h1>Detalles</h1>
-          <div class="sub">Información no sensible del entorno</div>
-        </div>
-      </div>
-      <div class="chip">INFO</div>
-    </div>
-
-    <div class="side">
-      <div class="sideCard">
-        <div class="kv">
-          <div class="k">Hora local</div><div class="v" id="tLocal">—</div>
-          <div class="k">Idioma</div><div class="v" id="lang">—</div>
-          <div class="k">Plataforma</div><div class="v" id="plat">—</div>
-          <div class="k">Pantalla</div><div class="v" id="scr">—</div>
-          <div class="k">Estado</div><div class="v" id="onl">—</div>
-        </div>
-      </div>
-
-      <details>
-        <summary>Buenas prácticas</summary>
-        <ul>
-          <li>Verificá el dominio antes de hacer clic.</li>
-          <li>Desconfiá de la urgencia.</li>
-          <li>Confirmá por otro canal.</li>
-          <li>Usá MFA cuando sea posible.</li>
-        </ul>
-      </details>
-
-      <div class="sideCard">
-        <strong>Autor</strong><br>
-        Yedelmark Lewis (Chokz)<br>
-        Proyecto educativo de concientización
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL SALIDA -->
-<div id="exitModal" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,.62);z-index:9999;padding:20px">
-  <div style="width:min(560px,92vw);background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:18px">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <strong>Salir de la revisión</strong>
-      <button onclick="closeExitModal()" style="border:1px solid var(--border);background:transparent;border-radius:12px;width:36px;height:36px;cursor:pointer">✕</button>
-    </div>
-    <p style="color:var(--muted);margin-top:10px">
-      Simulación educativa. Puede salir en cualquier momento.
+  <div class="c">
+    <p class="lead">
+      Esta simulación evalúa <strong>riesgo basado en comportamiento</strong>.
+      No solicita credenciales ni ejecuta accesos no autorizados.
     </p>
-    <div class="row" style="justify-content:flex-end;margin-top:12px">
-      <button class="btn" onclick="tryFullscreen()">Pantalla completa</button>
-      <button class="btn btn-ghost" onclick="closeExitModal()">Salir</button>
+
+    <div class="row">
+      <button class="btn go" id="continue">Continuar</button>
+      <button class="btn ghost" id="verify">Verificar dominio</button>
     </div>
+
+    <div class="bar"><div class="fill" id="fill"></div></div>
+
+    <div class="grid" id="data"></div>
+
+    <div class="lead" id="conclusion" style="margin-top:14px"></div>
+  </div>
+  <div class="footer">
+    Proyecto educativo • Concientización en ciberseguridad • Yedelmark Lewis (Chokz)
   </div>
 </div>
 
 <script>
-  // Side info
-  tLocal.textContent = new Date().toString();
-  lang.textContent = navigator.language || "N/A";
-  plat.textContent = navigator.platform || "N/A";
-  scr.textContent = `${screen.width} × ${screen.height}`;
-  onl.textContent = navigator.onLine ? "En línea" : "Sin conexión";
-  ref.textContent = "REF: " + Math.random().toString(36).slice(2,8).toUpperCase();
+  let score = 0, interactions = 0, start = Date.now();
+  const fill = document.getElementById("fill");
+  const status = document.getElementById("status");
+  const data = document.getElementById("data");
+  const conclusion = document.getElementById("conclusion");
 
-  const pwrap = document.getElementById("pwrap");
-  const pbar = document.getElementById("pbar");
-  const checks = document.getElementById("checks");
-  const edu = document.getElementById("edu");
-  const actions = document.getElementById("actions");
-
-  const list = [
-    {t:"Validación de integridad", d:"Parámetros de sesión consistentes.", s:"ok"},
-    {t:"Revisión de riesgos", d:"Señales de ingeniería social detectables.", s:"warn"},
-    {t:"Trazabilidad", d:"No se solicitaron credenciales.", s:"ok"},
-  ];
-
-  function render(step){
-    checks.innerHTML="";
-    list.forEach((i,idx)=>{
-      const el=document.createElement("div");
-      el.className="item "+(idx<step?i.s:"");
-      el.innerHTML=`<div class="icon">${idx<step?(i.s==="ok"?"✓":"!"):"•"}</div>
-        <div><p class="t">${i.t}</p><p class="d">${i.d}</p></div>`;
-      checks.appendChild(el);
-    });
+  function add(k,v){
+    const d=document.createElement("div");
+    d.className="box"; d.innerHTML=`<div class="k">${k}</div><div class="v">${v}</div>`;
+    data.appendChild(d);
+  }
+  function update(){
+    const pct = Math.min(100, score);
+    fill.style.width = pct + "%";
+    status.className = "pill " + (score>=70?"high":score>=40?"med":"low");
+    status.textContent = score>=70?"RIESGO ALTO":score>=40?"RIESGO MEDIO":"RIESGO BAJO";
   }
 
-  start.onclick=async()=>{
-    pwrap.style.display="block"; checks.style.display="grid";
-    for(const [p,s] of [[30,1],[60,2],[90,3],[100,3]]){
-      await new Promise(r=>setTimeout(r,650));
-      pbar.style.width=p+"%"; render(s);
-    }
-    edu.style.display="inline-flex"; actions.style.display="flex";
-    try{await document.documentElement.requestFullscreen();}catch(e){}
+  // Datos reales visibles
+  add("Idioma", navigator.language);
+  add("Zona horaria", Intl.DateTimeFormat().resolvedOptions().timeZone);
+  add("Plataforma", navigator.platform);
+  add("Pantalla", `${screen.width}×${screen.height}`);
+  add("Estado", navigator.onLine ? "En línea" : "Sin conexión");
+
+  document.getElementById("continue").onclick = ()=>{
+    interactions++; score += 35; update();
+    conclusion.textContent = "Aceptó una acción sin verificación independiente del origen.";
+  };
+  document.getElementById("verify").onclick = ()=>{
+    interactions++; score = Math.max(0, score-20); update();
+    conclusion.textContent = "Intentó verificar el origen. El riesgo disminuye.";
   };
 
-  function openExitModal(){ exitModal.style.display="flex"; }
-  function closeExitModal(){ exitModal.style.display="none"; }
-  async function tryFullscreen(){ try{await document.documentElement.requestFullscreen();}catch(e){} closeExitModal(); }
+  setInterval(()=>{
+    const t = (Date.now()-start)/1000;
+    if(t>15) score = Math.min(100, score+20);
+    if(interactions>2) score = Math.min(100, score+15);
+    if(/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) score = Math.min(100, score+10);
+    update();
+    if(score>=70){
+      conclusion.innerHTML = `
+        <strong>Conclusión:</strong> No hubo explotación técnica.
+        El riesgo se generó por decisiones humanas.
+        En un entorno real, esto sería suficiente para iniciar un compromiso.
+      `;
+    }
+  }, 2000);
 </script>
 
 </body>
