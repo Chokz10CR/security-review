@@ -16,59 +16,51 @@
     font-family: system-ui, "Segoe UI", Arial, sans-serif; color:var(--text);
   }
   .card{
-    width:min(820px,96vw); background:var(--card); border:1px solid var(--border);
+    width:min(880px,96vw); background:var(--card); border:1px solid var(--border);
     border-radius:18px; box-shadow:0 30px 90px rgba(0,0,0,.45); overflow:hidden;
   }
-  .top{padding:18px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between}
+  .top{padding:18px 20px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; gap:12px}
   .brand{display:flex; gap:12px; align-items:center}
   .logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#2563eb,#1d4ed8)}
   .chip{padding:6px 10px;border-radius:999px;border:1px solid rgba(37,99,235,.25);background:rgba(37,99,235,.12);font-weight:900;font-size:12px}
   .c{padding:20px}
   h1{margin:0 0 8px 0;font-size:22px}
   p{margin:8px 0;color:var(--muted);line-height:1.6}
-  .row{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end}
-  .btn{border:0;border-radius:12px;padding:11px 13px;cursor:pointer;font-weight:900}
-  .go{background:linear-gradient(180deg,#2563eb,#1d4ed8);color:#fff}
-  .ghost{background:transparent;border:1px solid var(--border);color:#fff}
-
-  /* Lockdown visual */
-  .lock{
-    position:fixed; inset:0; display:none; align-items:center; justify-content:center;
-    background:rgba(2,6,23,.86); z-index:9999; padding:18px;
-  }
-  .panel{
-    width:min(860px,96vw); background:var(--card); border:1px solid var(--border);
-    border-radius:18px; box-shadow:0 30px 90px rgba(0,0,0,.55); overflow:hidden;
-  }
-  .panelTop{
-    padding:16px 18px; border-bottom:1px solid var(--border);
-    display:flex; justify-content:space-between; align-items:center;
-    background:linear-gradient(180deg, rgba(220,38,38,.18), transparent);
-  }
-  .sev{display:inline-flex;gap:8px;align-items:center;font-weight:900;font-size:12px;color:#fecaca}
-  .dot{width:8px;height:8px;border-radius:99px;background:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,.2)}
-  .x{width:38px;height:38px;border-radius:12px;border:1px solid var(--border);background:transparent;color:#fff;font-weight:900;cursor:pointer}
-  .panelBody{padding:18px}
-  .big{font-size:26px;font-weight:900;margin:6px 0}
-  .small{color:var(--muted);font-size:13px;line-height:1.55}
-  .bar{height:10px;border-radius:999px;overflow:hidden;background:rgba(148,163,184,.18);margin:12px 0}
-  .fill{height:100%;width:0%;background:linear-gradient(90deg,#2563eb,#f59e0b,#dc2626);transition:width .18s}
+  .bar{height:10px;border-radius:999px;overflow:hidden;background:rgba(148,163,184,.18);margin:14px 0}
+  .fill{height:100%;width:0%;background:linear-gradient(90deg,#2563eb,#f59e0b,#dc2626);transition:width .2s}
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
   @media(max-width:640px){.grid{grid-template-columns:1fr}}
   .box{border:1px solid var(--border);border-radius:14px;padding:12px;background:rgba(148,163,184,.06)}
   .k{font-size:12px;color:var(--muted)}
-  .v{margin-top:6px;font-size:13.5px}
+  .v{margin-top:6px;font-size:13.5px;word-break:break-word}
+  .row{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; margin-top:14px}
+  .btn{border:0;border-radius:12px;padding:11px 13px;cursor:pointer;font-weight:900}
+  .go{background:linear-gradient(180deg,#2563eb,#1d4ed8);color:#fff}
+  .ghost{background:transparent;border:1px solid var(--border);color:#fff}
 
-  /* Toasts */
-  .toasts{position:fixed; right:14px; bottom:14px; display:grid; gap:10px; z-index:10000}
+  /* Overlay (lock visual, sin coerción) */
+  .overlay{position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(2,6,23,.84); z-index:9000; padding:18px;}
+  .panel{width:min(860px,96vw); background:var(--card); border:1px solid var(--border); border-radius:18px; box-shadow:0 30px 90px rgba(0,0,0,.55); overflow:hidden;}
+  .panelTop{padding:16px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; gap:10px;
+            background:linear-gradient(180deg, rgba(220,38,38,.18), transparent);}
+  .sev{display:inline-flex;align-items:center;gap:8px;font-weight:900;font-size:12px;color:#fecaca}
+  .dot{width:8px;height:8px;border-radius:99px;background:var(--danger);box-shadow:0 0 0 3px rgba(220,38,38,.18)}
+  .x{width:38px;height:38px;border-radius:12px;border:1px solid var(--border);background:transparent;color:#fff;font-weight:900;cursor:pointer}
+  .panelBody{padding:18px}
+  .big{font-size:26px;font-weight:900;margin:6px 0}
+  .small{color:var(--muted);font-size:13px;line-height:1.55}
+
+  /* Toasts: “anuncios” random dentro de la página */
+  .toasts{position:fixed; left:14px; bottom:14px; display:grid; gap:10px; z-index:9999}
   .toast{
-    width:min(360px,92vw); background:#0b1220; color:#fff;
+    width:min(420px,92vw); background:#0b1220; color:#fff;
     border:1px solid var(--border); border-radius:14px; padding:12px;
     box-shadow:0 18px 50px rgba(0,0,0,.55);
-    animation: slide .25s ease;
+    animation: slide .22s ease;
   }
   .toast b{font-size:13px}
-  .toast p{margin:6px 0 0 0;font-size:12.5px;color:#cbd5e1}
+  .toast p{margin:6px 0 0 0;font-size:12.5px;color:#cbd5e1;line-height:1.45}
+  .tag{display:inline-block;margin-top:8px;font-size:11px;color:#93c5fd}
   @keyframes slide{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
 </style>
 </head>
@@ -80,14 +72,19 @@
       <div class="logo"></div>
       <div>
         <b>Portal de Seguridad</b><br>
-        <span style="font-size:12px;color:var(--muted)">Validación de sesión</span>
+        <span style="font-size:12px;color:var(--muted)">Validación preventiva de sesión</span>
       </div>
     </div>
     <div class="chip">SECURE</div>
   </div>
+
   <div class="c">
     <h1>Validación de acceso</h1>
-    <p>Proceso preventivo. No se solicitan credenciales.</p>
+    <p>Proceso preventivo. No solicitamos credenciales. Evaluación rápida de integridad.</p>
+
+    <div class="grid" id="grid"></div>
+    <div class="bar"><div class="fill" id="fill"></div></div>
+
     <div class="row">
       <button class="btn ghost" id="help">Ayuda</button>
       <button class="btn go" id="start">Continuar</button>
@@ -95,20 +92,21 @@
   </div>
 </div>
 
-<!-- Lockdown visual -->
-<div class="lock" id="lock">
+<div class="overlay" id="ov">
   <div class="panel">
     <div class="panelTop">
-      <div class="sev"><span class="dot"></span> ACCESO RESTRINGIDO (PREVENTIVO)</div>
+      <div class="sev"><span class="dot"></span> SESIÓN AISLADA (SIMULACIÓN)</div>
       <button class="x" id="close">✕</button>
     </div>
     <div class="panelBody">
-      <div class="big" id="title">Revisión de seguridad en curso…</div>
-      <div class="small" id="msg">No ingrese credenciales.</div>
-      <div class="bar"><div class="fill" id="fill"></div></div>
-      <div class="grid" id="g"></div>
-      <div class="row" style="justify-content:flex-end;margin-top:10px">
-        <button class="btn ghost" id="escHint">Salir (ESC)</button>
+      <div class="big" id="ovTitle">Revisión en curso…</div>
+      <div class="small" id="ovMsg">Validando señales de riesgo.</div>
+      <div class="bar" style="margin-top:14px"><div class="fill" id="ovFill"></div></div>
+      <div class="grid" id="ovGrid"></div>
+
+      <div class="row">
+        <button class="btn ghost" id="learn">¿Qué fue eso?</button>
+        <button class="btn go" id="ok">Cerrar</button>
       </div>
     </div>
   </div>
@@ -117,75 +115,128 @@
 <div class="toasts" id="toasts"></div>
 
 <script>
-  const lock = document.getElementById("lock");
+  const grid = document.getElementById("grid");
   const fill = document.getElementById("fill");
-  const g = document.getElementById("g");
-  const title = document.getElementById("title");
-  const msg = document.getElementById("msg");
+  const ov = document.getElementById("ov");
+  const ovFill = document.getElementById("ovFill");
+  const ovGrid = document.getElementById("ovGrid");
+  const ovTitle = document.getElementById("ovTitle");
+  const ovMsg = document.getElementById("ovMsg");
   const toasts = document.getElementById("toasts");
 
-  function box(k,v){
+  function box(parent,k,v){
     const d=document.createElement("div");
-    d.className="box"; d.innerHTML=`<div class="k">${k}</div><div class="v">${v}</div>`;
-    g.appendChild(d);
-  }
-  function toast(t,m){
-    const d=document.createElement("div");
-    d.className="toast"; d.innerHTML=`<b>${t}</b><p>${m}</p>`;
-    toasts.appendChild(d);
-    setTimeout(()=>d.remove(), 3500);
+    d.className="box";
+    d.innerHTML=`<div class="k">${k}</div><div class="v">${v}</div>`;
+    parent.appendChild(d);
   }
 
-  // ESC siempre sale
-  document.addEventListener("keydown", (e)=>{
-    if(e.key==="Escape"){ lock.style.display="none"; try{document.exitFullscreen()}catch{} }
-  });
-  document.getElementById("close").onclick = ()=>{ lock.style.display="none"; try{document.exitFullscreen()}catch{} };
+  function toast(t,m,tag=""){
+    const d=document.createElement("div");
+    d.className="toast";
+    d.innerHTML=`<b>${t}</b><p>${m}</p>${tag?`<div class="tag">${tag}</div>`:""}`;
+    toasts.appendChild(d);
+    setTimeout(()=>d.remove(), 3600);
+  }
+
+  // “Anuncios” irrelevantes y raros (sin hablar de robo/cifrado)
+  const randomAds = [
+    ["Recordatorio", "Su suscripción de streaming vence hoy.", "ads:push-notification"],
+    ["Oferta", "2x1 en café cerca de tu zona.", "ads:contextual"],
+    ["Sistema", "Actualización disponible. Reinicio sugerido.", "os:notification"],
+    ["Calendario", "Evento programado en 30 minutos.", "calendar:hint"],
+    ["Mensajería", "Tiene 1 mensaje no leído.", "messaging:badge"],
+    ["Entrega", "Su paquete está en camino.", "logistics:status"],
+    ["Clima", "Posible lluvia esta tarde.", "weather:advisory"],
+    ["Finanzas", "Resumen de gastos generado.", "finance:summary"],
+  ];
+
+  function burstRandomToasts(){
+    // Muchas, pero controladas: no se hace pesada
+    let i=0;
+    const id=setInterval(()=>{
+      const pick = randomAds[Math.floor(Math.random()*randomAds.length)];
+      toast(pick[0], pick[1], pick[2]);
+      i++;
+      if(i>=14) clearInterval(id); // 14 “anuncios” y se detiene
+    }, 180);
+  }
+
+  // Datos del entorno (reales, permitidos)
+  const ticket = Math.random().toString(36).slice(2,10).toUpperCase();
+  box(grid,"Ticket", ticket);
+  box(grid,"Zona horaria", Intl.DateTimeFormat().resolvedOptions().timeZone || "N/A");
+  box(grid,"Idioma", navigator.language || "N/A");
+  box(grid,"Plataforma", navigator.platform || "N/A");
+  box(grid,"Pantalla", `${screen.width}×${screen.height}`);
+  box(grid,"Online", navigator.onLine ? "Sí" : "No");
 
   document.getElementById("help").onclick = ()=>{
-    alert("Verifique el dominio y confirme por otro canal si algo no cuadra.");
+    alert("Tip: Si un sitio muestra ruido raro, urgencia o presión, deténgase y verifique el dominio.");
+  };
+
+  function closeAll(){
+    ov.style.display="none";
+    try{ if(document.fullscreenElement) document.exitFullscreen(); }catch{}
+  }
+  document.getElementById("close").onclick = closeAll;
+  document.getElementById("ok").onclick = closeAll;
+
+  document.getElementById("learn").onclick = ()=>{
+    ovGrid.innerHTML="";
+    box(ovGrid,"Qué pasó","Se simuló ruido contextual para mostrar distracción/urgencia.");
+    box(ovGrid,"Por qué importa","La distracción reduce verificación y aumenta clics impulsivos.");
+    box(ovGrid,"Clave","Verifique dominio y canal antes de continuar.");
+    box(ovGrid,"Nota","No se recolectan credenciales ni datos personales.");
   };
 
   document.getElementById("start").onclick = async ()=>{
-    // fullscreen opcional
+    // Fullscreen opcional
     try{ await document.documentElement.requestFullscreen(); }catch{}
-
-    // impacto permitido
     if(navigator.vibrate) navigator.vibrate([120,80,120]);
 
-    // mostrar lockdown visual
-    lock.style.display="flex";
     fill.style.width="0%";
-    g.innerHTML="";
-    box("Ticket", Math.random().toString(36).slice(2,10).toUpperCase());
-    box("Plataforma", navigator.platform || "N/A");
-    box("Pantalla", `${screen.width}×${screen.height}`);
-    box("Estado", "Analizando…");
-
-    // toasts tipo sistema (limitados)
-    toast("Sistema","Análisis de integridad iniciado");
-    setTimeout(()=>toast("Seguridad","Señales de ingeniería social detectables"), 600);
-    setTimeout(()=>toast("Política","Aplicando control preventivo"), 1200);
-
-    const steps=[
-      {p:28, m:"Validando consistencia del navegador…"},
-      {p:58, m:"Verificando contexto de acceso…"},
-      {p:86, m:"Aplicando política preventiva…"},
-      {p:100, m:"Resultado listo."}
-    ];
-    for(const s of steps){
-      await new Promise(r=>setTimeout(r,650));
-      fill.style.width=s.p+"%";
-      msg.textContent=s.m;
+    for(const p of [25,50,75,100]){
+      await new Promise(r=>setTimeout(r,520));
+      fill.style.width=p+"%";
     }
 
-    title.textContent="Acceso restringido (preventivo)";
-    msg.innerHTML="Resultado de <strong>riesgo alto</strong> por contexto. <br><br><strong>Simulación educativa:</strong> no se recolectaron credenciales ni datos personales.";
-    g.innerHTML="";
-    box("Riesgo","ALTO (ingeniería social)");
-    box("Impacto potencial","MEDIO–ALTO");
-    box("Nota","No hubo exploit técnico");
-    box("Salir","Presione ESC");
+    // Overlay serio
+    ov.style.display="flex";
+    ovFill.style.width="0%";
+    ovGrid.innerHTML="";
+    box(ovGrid,"Clasificación","Riesgo ALTO (por contexto)");
+    box(ovGrid,"Ticket", ticket);
+    box(ovGrid,"Motivo","Acceso desde enlace no verificado");
+    box(ovGrid,"Estado","Analizando…");
+
+    const steps = [
+      [30,"Validando consistencia del entorno…"],
+      [60,"Revisando señales de presión/distracción…"],
+      [85,"Aplicando política preventiva…"],
+      [100,"Resultado listo."]
+    ];
+    for(const [p,m] of steps){
+      await new Promise(r=>setTimeout(r,520));
+      ovFill.style.width=p+"%";
+      ovMsg.textContent=m;
+    }
+
+    // “Ruido” random al final (impacto)
+    burstRandomToasts();
+
+    ovTitle.textContent="Acceso restringido (preventivo)";
+    ovMsg.innerHTML = `
+      Esta demo muestra cómo la <strong>distracción</strong> y la apariencia “legítima” pueden aumentar el riesgo.
+      <br><br>
+      <strong>Simulación educativa:</strong> no se recolectaron credenciales ni datos personales.
+    `;
+
+    ovGrid.innerHTML="";
+    box(ovGrid,"Riesgo","ALTO (ingeniería social)");
+    box(ovGrid,"Impacto potencial","MEDIO–ALTO");
+    box(ovGrid,"Aprendizaje","El ruido reduce la verificación.");
+    box(ovGrid,"Acción recomendada","Validar dominio + confirmar por otro canal.");
   };
 </script>
 
