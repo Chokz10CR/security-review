@@ -5,108 +5,141 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Verificación</title>
   <style>
-    body{margin:0;height:100vh;display:flex;align-items:center;justify-content:center;background:#f4f6f8;font-family:system-ui,Arial}
-    .card{background:#fff;width:min(560px,92vw);padding:28px;border-radius:14px;box-shadow:0 18px 40px rgba(0,0,0,.12);text-align:center}
-    h1{margin:0 0 10px;font-size:22px}
-    p{color:#555;line-height:1.5}
+    body{margin:0;height:100vh;display:flex;align-items:center;justify-content:center;background:#f3f5f7;font-family:system-ui,Arial}
+    .card{background:#fff;width:min(520px,92vw);padding:26px;border-radius:14px;box-shadow:0 18px 40px rgba(0,0,0,.12);text-align:center}
+    h1{margin:0 0 8px;font-size:22px}
+    p{margin:8px 0;color:#555;line-height:1.5}
     button{margin-top:16px;padding:12px 18px;border:0;border-radius:10px;background:#2b6cb0;color:#fff;font-size:16px;cursor:pointer}
+    .small{font-size:13px;color:#777;margin-top:10px}
+
+    /* Overlay de “mega susto” */
     .overlay{
-      position:fixed;inset:0;background:#070a10;display:none;align-items:center;justify-content:center;z-index:99;color:#fff;
+      position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+      background: radial-gradient(circle at 30% 20%, #ff3b3b, #0a0a0a 60%);
+      z-index:999;color:#fff;overflow:hidden;
     }
-    .alert{
-      width:min(720px,94vw);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:22px;background:rgba(255,255,255,.06);
-      box-shadow:0 24px 70px rgba(0,0,0,.5);
-      text-align:left;
+    .shake{animation:shake .08s infinite}
+    @keyframes shake{
+      0%{transform:translate(0,0)}25%{transform:translate(2px,-2px)}50%{transform:translate(-2px,2px)}75%{transform:translate(2px,2px)}100%{transform:translate(-2px,-2px)}
     }
-    .tag{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,71,87,.18);color:#ff4757;font-weight:700;font-size:12px;margin-bottom:10px}
-    .big{font-size:28px;margin:6px 0 10px}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-    .box{padding:12px 14px;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12)}
+    .panel{
+      width:min(820px,94vw);
+      background:rgba(0,0,0,.55);
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:18px;
+      padding:20px 18px;
+      box-shadow:0 30px 90px rgba(0,0,0,.6);
+    }
+    .tag{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.12);font-weight:800;letter-spacing:.6px}
+    .title{font-size:34px;font-weight:900;margin:10px 0 8px}
+    .sub{color:rgba(255,255,255,.85);line-height:1.5}
+    .bar{height:10px;background:rgba(255,255,255,.12);border-radius:999px;overflow:hidden;margin:14px 0}
+    .bar > div{height:100%;width:0;background:#00e676;border-radius:999px;transition:width .2s}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+    .box{padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14)}
     .k{font-size:12px;color:rgba(255,255,255,.7)}
-    .v{font-size:14px;margin-top:4px}
-    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-    .btn2{background:#ff4757}
-    .btn3{background:#2f855a}
-    .small{color:rgba(255,255,255,.75);font-size:13px;margin-top:12px;line-height:1.5}
-    @media (max-width:520px){ .grid{grid-template-columns:1fr} }
+    .v{font-size:14px;margin-top:6px;word-break:break-word}
+    .btnrow{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;margin-top:14px}
+    .btn2{background:#00c853;color:#05210e}
+    .btn3{background:rgba(255,255,255,.14);color:#fff}
+    .btnS{padding:10px 14px;border-radius:12px;border:0;font-weight:800;cursor:pointer}
+    @media (max-width:560px){.grid{grid-template-columns:1fr}.title{font-size:28px}}
   </style>
 </head>
 <body>
 
-<div class="card" id="card">
+<div class="card">
   <h1>Actualización requerida</h1>
-  <p>Para continuar, confirme la revisión rápida de seguridad.</p>
+  <p>Confirmá una verificación rápida para continuar.</p>
   <button id="go">Continuar</button>
-  <p style="font-size:13px;color:#777;margin-top:10px">Toma menos de 5 segundos</p>
+  <div class="small">Toma menos de 5 segundos</div>
 </div>
 
-<div class="overlay" id="overlay">
-  <div class="alert">
-    <div class="tag">SIMULACIÓN EDUCATIVA</div>
-    <div class="big">No hagás clic sin verificar ⚠️</div>
-    <div style="color:rgba(255,255,255,.85);line-height:1.5">
-      Esto parece un “susto”, pero es una demostración de concientización.
-      Una web puede ver ciertos <strong>datos básicos del dispositivo</strong> (sin robar nada),
-      y un atacante puede usar eso para manipularte.
+<div class="overlay" id="ov">
+  <div class="panel" id="panel">
+    <span class="tag">ALERTA</span>
+    <div class="title">Verificación en curso…</div>
+    <div class="sub" id="msg">
+      No cierres esta pantalla.
     </div>
+    <div class="bar"><div id="fill"></div></div>
 
     <div class="grid" id="info"></div>
 
-    <div class="small">
-      Importante: <strong>no se recolecta ni se guarda información personal</strong>.  
-      Esto solo muestra lo que cualquier página podría detectar (navegador, idioma, hora, etc.).
-    </div>
-
-    <div class="row">
-      <button class="btn3" id="learn">Ver cómo evitar esto ✅</button>
-      <button class="btn2" id="exit">Salir</button>
+    <div class="btnrow">
+      <button class="btnS btn3" id="learn">¿Qué pasó?</button>
+      <button class="btnS btn2" id="ok">Ok, entendí</button>
     </div>
   </div>
 </div>
 
+<audio id="beep">
+  <source src="data:audio/wav;base64,UklGRlQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=" type="audio/wav">
+</audio>
+
 <script>
-  const overlay = document.getElementById("overlay");
+  const ov = document.getElementById("ov");
+  const panel = document.getElementById("panel");
+  const fill = document.getElementById("fill");
+  const msg = document.getElementById("msg");
   const info = document.getElementById("info");
+  const beep = document.getElementById("beep");
 
   function addBox(k,v){
-    const d = document.createElement("div");
+    const d=document.createElement("div");
     d.className="box";
     d.innerHTML=`<div class="k">${k}</div><div class="v">${v}</div>`;
     info.appendChild(d);
   }
 
+  async function goFull(){
+    try{ await document.documentElement.requestFullscreen(); }catch(e){}
+  }
+
   document.getElementById("go").addEventListener("click", async () => {
-    // vibración suave si el dispositivo lo soporta
-    if (navigator.vibrate) navigator.vibrate([120, 80, 120]);
+    // “Impacto” sin daño: vibración + fullscreen + overlay + shake
+    if(navigator.vibrate) navigator.vibrate([120,80,120,80,180]);
+    try{ beep.play(); }catch(e){}
+    await goFull();
 
-    // intento de pantalla completa (el usuario puede salir con gesto)
-    try { await document.documentElement.requestFullscreen(); } catch(e){}
+    ov.style.display="flex";
+    panel.classList.add("shake");
 
-    // mostrar overlay
-    overlay.style.display="flex";
-
-    // info "segura" que una web puede ver sin permisos
-    info.innerHTML="";
-    addBox("Navegador", navigator.userAgent);
-    addBox("Idioma", navigator.language || "N/A");
-    addBox("Hora local", new Date().toString());
-    addBox("Tamaño pantalla", `${screen.width} x ${screen.height}`);
-    addBox("Plataforma", navigator.platform || "N/A");
-    addBox("Online", navigator.onLine ? "Sí" : "No");
+    // Simulación de “escaneo”
+    let p=0;
+    const t=setInterval(()=>{
+      p+=10;
+      fill.style.width = p+"%";
+      if(p===30) msg.textContent="Validando sesión…";
+      if(p===60) msg.textContent="Revisando actividad…";
+      if(p===90) msg.textContent="Listo.";
+      if(p>=100){
+        clearInterval(t);
+        panel.classList.remove("shake");
+        msg.innerHTML = `<strong>Tranqui 😅</strong> Esto fue una simulación educativa.`;
+        info.innerHTML="";
+        addBox("Lo que una web puede ver", "Navegador, idioma, hora, tamaño de pantalla (sin permisos).");
+        addBox("Navegador", navigator.userAgent);
+        addBox("Idioma", navigator.language || "N/A");
+        addBox("Hora local", new Date().toString());
+        addBox("Pantalla", `${screen.width} x ${screen.height}`);
+        addBox("Online", navigator.onLine ? "Sí" : "No");
+        addBox("Mensaje clave", "Si un enlace te mete presión o urgencia, verificá antes de tocar.");
+      }
+    }, 180);
   });
 
-  document.getElementById("exit").addEventListener("click", async () => {
-    overlay.style.display="none";
-    try { if (document.fullscreenElement) await document.exitFullscreen(); } catch(e){}
+  document.getElementById("ok").addEventListener("click", async () => {
+    ov.style.display="none";
+    try{ if(document.fullscreenElement) await document.exitFullscreen(); }catch(e){}
   });
 
   document.getElementById("learn").addEventListener("click", () => {
     info.innerHTML="";
-    addBox("1) Verificá el enlace", "Dominio correcto, sin letras raras, sin acortadores sospechosos.");
-    addBox("2) No te dejés llevar por urgencia", "Mensajes tipo “último aviso” buscan que actués sin pensar.");
-    addBox("3) Revisá el remitente", "No solo el nombre. Mirá el correo o el perfil real.");
-    addBox("4) Activá MFA", "Aunque roben la contraseña, el segundo factor frena el acceso.");
-    addBox("5) Si dudás, confirmá por otro canal", "Llamada o mensaje directo antes de abrir enlaces.");
+    addBox("1) Verificá el enlace", "Dominio real, sin letras raras ni acortadores.");
+    addBox("2) No caigás en urgencia", "“Último aviso” casi siempre es manipulación.");
+    addBox("3) Confirmá por otro canal", "Llamada o mensaje directo antes de abrir.");
+    addBox("4) Activá MFA", "Un segundo factor salva cuentas.");
   });
 </script>
 
